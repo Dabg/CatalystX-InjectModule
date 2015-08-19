@@ -1,8 +1,28 @@
+use utf8;
+
 package Catalyst::Plugin::Inject;
 
-use 5.006;
-use strict;
-use warnings;
+use Moose::Role;
+use namespace::autoclean;
+use Catalyst::Plugin::Inject::IM;
+use Catalyst::Plugin::Inject::Module;
+
+
+after 'setup_components' => sub {
+	my $c = shift;
+
+    my $conf = $c->config->{'Plugin::Inject'};
+
+    $c->mk_classdata('im'); # we will use this name in Catalyst
+
+    # injector module
+	my $im = $c->im( Catalyst::Plugin::Inject::IM->new );
+
+
+    $im->load($conf);
+
+};
+
 
 =head1 NAME
 
