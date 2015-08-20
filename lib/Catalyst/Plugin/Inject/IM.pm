@@ -34,14 +34,33 @@ sub get_module {
     my $operation = shift;
     my $version   = shift;
 
-#    my $same_module = ${$self->modules}[$self->name_to_id->{$module}];
+    if ( ! $operation || ! $version ) {
+        $operation = '>=';
+        $version   = 0;
+    }
+
+    my $ids_module = $self->name_to_id->{$module};
+
+    # operation / version
+    # if operation : '>=' => uses the high version after or egal to 'version'
+    #                '>'  => uses the high version after to 'version'
+    #                '<'  => uses the high version under or egal to 'version'
+    #                '<=' => uses the high version under to 'version'
+
+    foreach my $id ( @$ids_module ) {
+        my $mod = ${$self->modules}[$id];
+        return $mod;
+        print "get_module: module=$module id=$id version:" . $mod->version . "\n";
+    }
 }
 
 sub resolv {
-    my $self   = shift;
-    my $module = shift;
+    my $self      = shift;
+    my $module    = shift;
+    my $operation = shift;
+    my $version   = shift;
 
-    my $moduleref = ${$self->modules}[$self->name_to_id->{$module}];
+    my $moduleref = $self->get_module($module, $operation, $version );
     $self->resolver->dep_resolv($moduleref);
 }
 
@@ -65,14 +84,15 @@ sub convert_deps{
 
     foreach my $m ( @{$self->modules} ) {
         my $i=0;
-        foreach my $name ( @{$m->deps} ) {
+        print "module:" . $m->name ."\n";
+        foreach my $name_op_version ( @{$m->deps} ) {
 
-            if ( ! defined $self->name_to_id->{$name} ) {
-                print "Exception: dependency $name doesn't exist !\n";
-                next;
-            }
+            my ( $name, $operation, $version ) = split ( /\s+/, $name_op_version) ;
+            print "   dependence: $name\n";
+            print "   search module with good version ...\n";
             # Converts the dependency name into a module object
-            ${$m->deps}[$i] = ${$self->modules}[$self->name_to_id->{$name}];
+            # use the first module finded (without operation and version)
+            ${$m->deps}[$i] = $self->get_module($name);
             $i++;
         }
     }
@@ -118,7 +138,8 @@ sub load_modules_path{
 
             # adds the new module found in modules
             push( @{ $self->modules },Catalyst::Plugin::Inject::Module->new( $args ));
-            $self->name_to_id->{$mod_name} = $id;
+
+            push(@{$self->name_to_id->{$mod_name}}, $id);
             $id++;
         }
         #else {  print "No config -> NEXT"; }

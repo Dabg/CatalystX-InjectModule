@@ -4,3 +4,4 @@ Plugin::Inject:
   debug: 0
   path:
    - t/share/modulesX
+   - t/share/modules

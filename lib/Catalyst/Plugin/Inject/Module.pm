@@ -12,7 +12,8 @@ has name => (
 has version => (
                isa      => "Int",
                is       => "rw",
-);
+               default  => 0,
+           );
 
 has deps => (
                is       => "rw",

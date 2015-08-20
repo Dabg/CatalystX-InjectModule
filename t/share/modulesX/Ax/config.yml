@@ -1,4 +1,5 @@
 name: Ax
+version: 1
 dependencies:
-  - Bx
-  - Dx
+  - Bx    >=  1
+  - Dx    =   1

@@ -22,4 +22,7 @@ ok(my(undef, $c) = ctx_request('/'), 'The first request');
 
 my $resolved = $c->im->resolv('Ax');
 my $resolved_names = [ map  $_->name , @$resolved ];
+use Data::Dumper;print Dumper($resolved_names);
 is_deeply( $resolved_names, [ 'Dx', 'Ex', 'Cx', 'Bx', 'Ax' ], 'return the expected modules');
+
+print $c->im->get_module('Ax');
