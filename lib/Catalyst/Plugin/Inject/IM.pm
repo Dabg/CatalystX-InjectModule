@@ -22,7 +22,7 @@ has resolver => (
               default  => sub { Dependency::Resolver->new }
           );
 
-has name_to_id => (is      => 'rw',
+has name_to_ids => (is      => 'rw',
                    isa     => 'HashRef',
                    default => sub { {} },
                );
@@ -39,7 +39,7 @@ sub get_module {
         $version   = 0;
     }
 
-    my $ids_module = $self->name_to_id->{$module};
+    my $ids_module = $self->name_to_ids->{$module};
 
     # operation / version
     # if operation : '>=' => uses the high version after or egal to 'version'
@@ -139,7 +139,7 @@ sub load_modules_path{
             # adds the new module found in modules
             push( @{ $self->modules },Catalyst::Plugin::Inject::Module->new( $args ));
 
-            push(@{$self->name_to_id->{$mod_name}}, $id);
+            push(@{$self->name_to_ids->{$mod_name}}, $id);
             $id++;
         }
         #else {  print "No config -> NEXT"; }
