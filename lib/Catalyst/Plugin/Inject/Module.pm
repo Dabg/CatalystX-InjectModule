@@ -23,9 +23,50 @@ has deps => (
 
 has path => (
                isa      => "Str",
-               is       => "rw",
-);
+               is       => "ro",
+               trigger => sub {
+                   my $self = shift;
+                   $self->_build_paths;
+               },
+           );
 
+has lib_path => (
+               isa      => "Str",
+               is       => "rw",
+           );
+
+has template_path => (
+               isa      => "Str",
+               is       => "rw",
+           );
+
+has static_path => (
+               isa      => "Str",
+               is       => "rw",
+           );
+
+
+sub _build_paths {
+    my $self = shift;
+
+    my $path = $self->path;
+
+    # -- lib --
+    my $lib_path = "$path/lib";
+    $self->lib_path($lib_path)
+        if ( -d $lib_path );
+
+    # -- templates --
+    my $template_path = "$path/root/src";
+    $self->template_path($template_path)
+        if ( -d $template_path );
+
+    # -- static --
+    my $static_path = "$path/root/static";
+    $self->static_path($static_path)
+        if ( -d $static_path );
+
+}
 
 =head1 NAME
 
