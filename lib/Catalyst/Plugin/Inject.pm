@@ -4,7 +4,7 @@ package Catalyst::Plugin::Inject;
 
 use Moose::Role;
 use namespace::autoclean;
-use Catalyst::Plugin::Inject::IM;
+use Catalyst::Plugin::Inject::MI;
 use Catalyst::Plugin::Inject::Module;
 
 
@@ -16,7 +16,7 @@ after 'setup_components' => sub {
     $c->mk_classdata('im'); # we will use this name in Catalyst
 
     # injector module
-	my $im = $c->im( Catalyst::Plugin::Inject::IM->new );
+	my $im = $c->im( Catalyst::Plugin::Inject::MI->new );
 
 
     $im->load($conf);

@@ -1,5 +1,5 @@
 use utf8;
-package Catalyst::Plugin::Inject::IM;
+package Catalyst::Plugin::Inject::MI;
 
 use Moose;
 use namespace::autoclean;
@@ -148,7 +148,7 @@ sub load_modules_path{
 
 =head1 NAME
 
-Catalyst::Plugin::Inject::IM
+Catalyst::Plugin::Inject::MI Module injector
 
 =head1 SYNOPSIS
 
