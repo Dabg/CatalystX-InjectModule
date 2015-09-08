@@ -20,10 +20,12 @@ ok(my(undef, $c) = ctx_request('/'), 'The first request');
 #         \v  v
 #          C->E
 
-my $resolved = $c->im->resolv('Ax');
-my $resolved_names = [ map  $_->name , @$resolved ];
+my $resolved = $c->mi->resolv('Ax');
+my $resolved_names = [ map  $_->{name} , @$resolved ];
+
 
 is_deeply( $resolved_names, [ 'Dx', 'Ex', 'Cx', 'Bx', 'Ax' ], 'return the expected modules');
 
-ok( my $ax = $c->im->get_module('Ax'), 'get Ax module');
-is($ax->static_path, 't/share/modulesX/Ax/root/static', 'return static path');
+ok( my $ax = $c->mi->get_module('Ax'), 'get Ax module');
+
+is($ax->{path}, 't/share/modulesX/Ax', 'return Ax module path');

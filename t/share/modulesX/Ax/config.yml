@@ -1,5 +1,5 @@
 name: Ax
 version: 1
-dependencies:
+deps:
   - Bx    >=  1
   - Dx    =   1

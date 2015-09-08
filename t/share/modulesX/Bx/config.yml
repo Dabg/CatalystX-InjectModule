@@ -1,4 +1,5 @@
 name: Bx
-dependencies:
-  - Cx
+version: 1
+deps:
+  - Cx == 1
   - Ex
