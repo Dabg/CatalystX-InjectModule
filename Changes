@@ -1,5 +1,9 @@
 Revision history for Catalyst-Plugin-Inject
 
-0.01    2015-08-11
-        initiale release
+0.02  2015-09-09
+      - dependencies are resolved by the Dependency::Resolver Module
+      - Add lib module to INC
+      - add debug
 
+0.01  2015-08-11
+      - initiale release
