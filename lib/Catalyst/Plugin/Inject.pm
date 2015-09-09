@@ -27,39 +27,37 @@ after 'setup_components' => sub {
 
 =head1 NAME
 
-Catalyst::Plugin::Inject - The great new Catalyst::Plugin::Inject!
+Catalyst::Plugin::Inject - Inject components, plugins, template, lib ...
+
+This module is at EXPERIMENTAL stage, so use with caution.
 
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
 
-Perhaps a little code snippet.
+    use Catalyst qw/
+        ConfigLoader
+        Inject
+    /;
 
-    use Catalyst::Plugin::Inject;
+    # myapp.yml
+    Plugin::Inject:
+      path:
+        - t/share/modulesX
+        - t/share/modules
+      modules:
+        - Ax
+        - A
 
-    my $foo = Catalyst::Plugin::Inject->new();
-    ...
+    # Each module must have at least one file config.yml
+    name: Bx
+    version: 2
+    deps:
+      - Cx == 2
+      - Ex
+    catalyst_plugins:
+      - Static::Simple
+      - +CatalystX::SimpleLogin
 
-=head1 EXPORT
-
-A list of functions that can be exported.  You can delete this section
-if you don't export anything, such as for a purely object-oriented module.
-
-=head1 SUBROUTINES/METHODS
-
-=head2 function1
-
-=cut
-
-sub function1 {
-}
-
-=head2 function2
-
-=cut
-
-sub function2 {
-}
 
 =head1 AUTHOR
 
