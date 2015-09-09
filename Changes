@@ -1,5 +1,8 @@
 Revision history for Catalyst-Plugin-Inject
 
+0.04  2015-09-09
+      - inject catalyst plugins
+
 0.03  2015-09-09
       - inject components in application
 
