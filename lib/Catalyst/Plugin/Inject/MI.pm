@@ -1,8 +1,17 @@
 use utf8;
 package Catalyst::Plugin::Inject::MI;
 
-use Moose;
+# This plugin is inspired by :
+# - CatalystX::InjectComponent
+# - Catalyst::Plugin::AutoCRUD
+# - Catalyst::Plugin::PluginLoader
+# - Catalyst::Plugin::Thruk::ConfigLoader
+
+use Class::Load ':all';
+use File::Find;
 use Dependency::Resolver;
+use Devel::InnerPackage qw/list_packages/;
+use Moose;
 
 has resolver => (
               is       => 'rw',
@@ -30,8 +39,8 @@ sub get_module {
 sub resolv {
     my $self      = shift;
     my $module    = shift;
-    my $operation = shift || '>=';
-    my $version   = shift || 0;
+    my $operation = shift;
+    my $version   = shift;
 
     my $Module   = $self->get_module($module, $operation, $version );
     my $resolved = $self->resolver->dep_resolv($Module);
@@ -107,6 +116,8 @@ sub inject {
                 next;
         }
 
+
+
         foreach my $M ( @$resolved ) {
             $self->log("  inject " . $M->{name} . '...');
             if ( $M->{_injected} ){
@@ -151,21 +162,85 @@ sub _load_lib {
 
     $self->log("  - Add lib $libpath");
     unshift( @INC, $libpath );
+
+	# Search and load components
+	my $all_libs = $self->_find_libs_in_module( $module );
+
+	foreach my $file (@$all_libs) {
+		$self->_load_component( $module, $file )
+			if ( grep {/Model|View|Controller/} $file );
+	}
 }
 
 sub _load_catalyst_plugins {
 	my ( $c, $module ) = @_;
 
+    # TODO
 }
 
 sub _load_template {
 	my ( $c, $module ) = @_;
 
+    # TODO
 }
 
 sub _load_static {
 	my ( $c, $module ) = @_;
 
+    # TODO
+}
+
+
+sub _load_component {
+	my ( $self, $module, $file ) = @_;
+
+	my $libpath = $module->{path} . '/lib';
+	my $comp    = $file;
+	$comp =~ s|$libpath/||;
+	$comp =~ s|\.pm$||;
+	$comp =~ s|/|::|g;
+
+	$self->log("  - Add Comp $comp");
+
+	if ( !is_class_loaded($comp) ) {
+		load_class($comp) or die "Can't load $comp !";
+
+		# inject entry to %INC so Perl knows this component is loaded
+		# this is just for politeness and does not aid Catalyst
+		( my $file = "$comp.pm" ) =~ s{::}{/}g;
+		$INC{$file} = 'loaded';
+
+		#  add newly created components to catalyst
+		#  must set up component and -then- call list_packages on it
+		$self->ctx->components->{$comp} = $self->ctx->setup_component($comp);
+
+		for my $m ( list_packages($comp) ) {
+			$self->ctx->components->{$m} = $self->ctx->setup_component($m);
+		}
+	} else {
+        # XXX : die ???
+		$self->log( $module->{name} . " $comp id already loaded" );
+	}
+}
+
+
+sub _find_libs_in_module {
+	my $self   = shift;
+	my $module = shift;
+
+	my @comp_files;
+	my $tf_finder = sub {
+		return if !-f;
+		return if !/\.pm\z/;
+
+		my $file = $File::Find::name;
+		push @comp_files, $file;
+	};
+
+    my $libpath = $module->{path} . '/lib';
+
+    find( $tf_finder, $libpath  );
+	return \@comp_files;
 }
 
 =head1 NAME
