@@ -12,19 +12,10 @@ use_ok( 'Catalyst::Test', 'MyApp' );
 
 ok(my(undef, $c) = ctx_request('/'), 'The first request');
 
-#          A
-#         / \
-#        v   v
-#        D   B
-#        ^  /\
-#         \v  v
-#          C->E
+# After first request 'A' and 'Ax' modules are loaded (and their dependencies).
 
-my $resolved = $c->mi->resolv('Ax');
-my $resolved_names = [ map  $_->{name} , @$resolved ];
-
-
-is_deeply( $resolved_names, [ 'Dx', 'Ex', 'Cx', 'Bx', 'Ax' ], 'return the expected modules');
+# check if INC contains Ax lib :
+ok((grep { 't/share/modulesX/Ax/lib' eq $_ } @INC), 'check if INC contains Ax lib');
 
 ok( my $ax = $c->mi->get_module('Ax'), 'get Ax module');
 is($ax->{path}, 't/share/modulesX/Ax', 'return Ax module path');
@@ -34,3 +25,22 @@ is($bx1->{path}, 't/share/modulesX/Bx', 'return Bx1 path');
 
 ok( my $bx2 = $c->mi->get_module('Bx'), 'get Bx2 module');
 is($bx2->{path}, 't/share/modules/Bx', 'return Bx2 path');
+
+
+
+# Dependencies between modules
+# (see all config.yml in paths defined in myapp.yml)
+#
+#          A
+#         / \
+#        v   v
+#        D   B
+#        ^  /\
+#         \v  v
+#          C->E
+
+
+my $resolved = $c->mi->resolv('Ax');
+my $resolved_names = [ map  $_->{name} , @$resolved ];
+
+is_deeply( $resolved_names, [ 'Dx', 'Ex', 'Cx', 'Bx', 'Ax' ], 'return the expected modules');
