@@ -19,6 +19,9 @@ after 'setup_components' => sub {
 
     $im->load($conf);
 
+    # inject configured modules
+    $im->inject($conf->{modules});
+
 };
 
 

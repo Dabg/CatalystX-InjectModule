@@ -23,8 +23,8 @@ sub resolv {
     my $operation = shift || '>=';
     my $version   = shift || 0;
 
-    my $module   = $self->get_module($module, $operation, $version );
-    my $resolved = $self->resolver->dep_resolv($module);
+    my $Module   = $self->get_module($module, $operation, $version );
+    my $resolved = $self->resolver->dep_resolv($Module);
     return $resolved;
 }
 
@@ -82,6 +82,76 @@ sub load_modules_path{
         }
         #else {  print "No config -> NEXT\n"; }
     }
+}
+
+sub inject {
+    my $self    = shift;
+    my $modules = shift;
+
+    foreach my $m ( @$modules ) {
+        print " Requested module: $m\n";
+        my $resolved = $self->resolv($m);
+
+        if ( $resolved->[-1]->{_injected}){
+                print "  Already injected\n";
+                next;
+        }
+
+        foreach my $M ( @$resolved ) {
+            print "  inject " . $M->{name} . ": ";
+            if ( $M->{_injected} ){
+                print "Already injected\n";
+                next;
+            }
+
+            # inject module
+            $self->_inject($M);
+
+            $M->{_injected} = 1;
+            print "OK\n";
+        }
+    }
+
+}
+
+
+sub _inject {
+    my $self   = shift;
+    my $module = shift;
+
+
+    # Inject lib and components ----------
+    $self->_load_lib($module);
+
+    # Inject catalyse plugin dependencies
+    $self->_load_catalyst_plugins($module);
+
+    # Inject templates -------------------
+    $self->_load_template($module);
+
+    # Inject static ----------------------
+    $self->_load_static($module);
+
+}
+
+sub _load_lib {
+	my ( $c, $module ) = @_;
+
+}
+
+sub _load_catalyst_plugins {
+	my ( $c, $module ) = @_;
+
+}
+
+sub _load_template {
+	my ( $c, $module ) = @_;
+
+}
+
+sub _load_static {
+	my ( $c, $module ) = @_;
+
 }
 
 =head1 NAME
