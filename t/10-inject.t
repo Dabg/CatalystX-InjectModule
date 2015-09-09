@@ -27,5 +27,10 @@ my $resolved_names = [ map  $_->{name} , @$resolved ];
 is_deeply( $resolved_names, [ 'Dx', 'Ex', 'Cx', 'Bx', 'Ax' ], 'return the expected modules');
 
 ok( my $ax = $c->mi->get_module('Ax'), 'get Ax module');
-
 is($ax->{path}, 't/share/modulesX/Ax', 'return Ax module path');
+
+ok( my $bx1 = $c->mi->get_module('Bx', "==", 1), 'get Bx1 module');
+is($bx1->{path}, 't/share/modulesX/Bx', 'return Bx1 path');
+
+ok( my $bx2 = $c->mi->get_module('Bx'), 'get Bx2 module');
+is($bx2->{path}, 't/share/modules/Bx', 'return Bx2 path');
