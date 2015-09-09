@@ -12,6 +12,7 @@ use File::Find;
 use Dependency::Resolver;
 use Devel::InnerPackage qw/list_packages/;
 use Moose;
+use Moose::Util qw/find_meta apply_all_roles/;
 
 has resolver => (
               is       => 'rw',
@@ -20,6 +21,12 @@ has resolver => (
 
 has ctx => (
               is       => 'rw',
+          );
+
+has catalyst_plugins => (
+              is       => 'rw',
+              isa      => 'HashRef',
+              default  => sub { {} },
           );
 
 my $debug = 0;
@@ -91,13 +98,8 @@ sub load_modules_path{
                 or die "Error (conf: $mod_conf_filename) : $!\n";
             ($filename, $mod_config) = %{$cfg->[0]};
 
-            my $module = { name    => $mod_config->{name},
-                           version => $mod_config->{version},
-                           deps    => $mod_config->{deps},
-                           path    => $mod_path,
-                       };
-
-            $self->resolver->add($module);
+            $mod_config->{path} = $mod_path;
+            $self->resolver->add($mod_config);
         }
         #else {  print "No config -> NEXT\n"; }
     }
@@ -173,10 +175,79 @@ sub _load_lib {
 }
 
 sub _load_catalyst_plugins {
-	my ( $c, $module ) = @_;
+	my ( $self, $module ) = @_;
 
-    # TODO
+	my $plugins = $module->{catalyst_plugins};
+	foreach my $p (@$plugins) {
+
+		# If plugin is not already loaded
+		if ( !$self->catalyst_plugins->{$p} ) {
+			$self->_load_catalyst_plugin($p);
+			$self->catalyst_plugins->{$p} = 1;
+		} else {
+			$self->log(" - Catalyst plugin $p already loaded !");
+		}
+	}
 }
+
+sub _load_catalyst_plugin {
+	my ( $self, $plugin ) = @_;
+
+	$self->log("  - Add Catalyst plugin $plugin\n");
+
+	my $isa = do { no strict 'refs'; \@{ $self->ctx . '::ISA' } };
+	my $isa_idx = 0;
+	$isa_idx++ while $isa->[$isa_idx] ne 'Catalyst'; #__PACKAGE__;
+
+
+	if ( $plugin !~ s/^\+(.*)/$1/ ) { $plugin = 'Catalyst::Plugin::' . $plugin }
+
+	Catalyst::Utils::ensure_class_loaded($plugin);
+	$self->ctx->_plugins->{$plugin} = 1;
+
+	my $meta = find_meta($plugin);
+
+	if ( $meta && blessed $meta && $meta->isa('Moose::Meta::Role') ) {
+		apply_all_roles( $self->ctx => $plugin );
+	} else {
+		splice @$isa, ++$isa_idx, 0, $plugin;
+	}
+
+	unshift @$isa, shift @$isa; # necessary to tell perl that @ISA changed
+	mro::invalidate_all_method_caches();
+
+	{
+
+		# ->next::method won't work anymore, we have to do it ourselves
+		my @precedence_list = $self->ctx->meta->class_precedence_list;
+
+		1 while shift @precedence_list ne 'Catalyst'; #__PACKAGE__;
+
+		my $old_next_method = \&maybe::next::method;
+
+		my $next_method = sub {
+			if ( ( caller(1) )[3] !~ /::setup\z/ ) {
+				goto &$old_next_method;
+			}
+
+			my $code;
+			while ( my $next_class = shift @precedence_list ) {
+				$code = $next_class->can('setup');
+				last if $code;
+			}
+			return unless $code;
+
+			goto &$code;
+		};
+
+		no warnings 'redefine';
+		local *next::method        = $next_method;
+		local *maybe::next::method = $next_method;
+
+		return $self->ctx->next::method(@_);
+	}
+}
+
 
 sub _load_template {
 	my ( $c, $module ) = @_;
@@ -200,7 +271,7 @@ sub _load_component {
 	$comp =~ s|\.pm$||;
 	$comp =~ s|/|::|g;
 
-	$self->log("  - Add Comp $comp");
+	$self->log("  - Add Component $comp");
 
 	if ( !is_class_loaded($comp) ) {
 		load_class($comp) or die "Can't load $comp !";
