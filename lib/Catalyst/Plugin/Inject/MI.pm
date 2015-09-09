@@ -9,6 +9,16 @@ has resolver => (
               isa      => 'Dependency::Resolver',
           );
 
+has ctx => (
+              is       => 'rw',
+          );
+
+my $debug = 0;
+
+sub log {
+    my($self, $msg) = @_;
+	$self->ctx->log->debug( "MI: $msg" ) if $debug;
+}
 
 sub get_module {
     my($self, $mod, $op , $ver) = @_;
@@ -33,14 +43,15 @@ sub load {
     my $conf           = shift;
     my $conf_filename  = shift;
 
+    $debug = 1 if $conf->{debug};
     $conf_filename ||= 'config.yml';
-    print "load_modules ...\n";
+    $self->log("load_modules ...");
 
-    $self->resolver(Dependency::Resolver->new(debug => $conf->{debug}));
+    $self->resolver(Dependency::Resolver->new(debug => $debug ));
 
     # search modules in 'path' directories  and in @INC
     for my $dir ( @{ $conf->{path} }, @INC ) {
-        $self->load_modules_path($dir, $conf_filename, $conf->{debug});
+        $self->load_modules_path($dir, $conf_filename);
     }
 }
 
@@ -49,9 +60,8 @@ sub load_modules_path{
     my $self           = shift;
     my $dir            = shift;
     my $conf_filename  = shift;
-    my $debug          = shift;
 
-    print "  - search modules on $dir ...\n";
+    $self->log("  - search modules on $dir ...");
 
     my $id=0;
     for my $mod_path ( glob("$dir/*") ) {
@@ -65,7 +75,7 @@ sub load_modules_path{
 
         # OK config exist
         if ( -e $mod_conf_filename ) {
-            print "    - find module $mod_name : OK\n";
+            $self->log("    - find module $mod_name : OK");
             my $mod_config;
             my $filename;
             my $cfg = Config::Any->load_files({files => [$mod_conf_filename], use_ext => 1 })
@@ -89,18 +99,18 @@ sub inject {
     my $modules = shift;
 
     foreach my $m ( @$modules ) {
-        print " Requested module: $m\n";
+        $self->log(" Requested module: $m");
         my $resolved = $self->resolv($m);
 
         if ( $resolved->[-1]->{_injected}){
-                print "  Already injected\n";
+                $self->log("  Already injected");
                 next;
         }
 
         foreach my $M ( @$resolved ) {
-            print "  inject " . $M->{name} . ": ";
+            $self->log("  inject " . $M->{name} . '...');
             if ( $M->{_injected} ){
-                print "Already injected\n";
+                $self->log("Already injected");
                 next;
             }
 
@@ -108,7 +118,6 @@ sub inject {
             $self->_inject($M);
 
             $M->{_injected} = 1;
-            print "OK\n";
         }
     }
 
@@ -135,8 +144,13 @@ sub _inject {
 }
 
 sub _load_lib {
-	my ( $c, $module ) = @_;
+	my ( $self, $module ) = @_;
 
+    my $libpath = $module->{path} . '/lib';
+    return if ( ! -d $libpath);
+
+    $self->log("  - Add lib $libpath");
+    unshift( @INC, $libpath );
 }
 
 sub _load_catalyst_plugins {

@@ -15,7 +15,7 @@ after 'setup_components' => sub {
     $c->mk_classdata('mi'); # we will use this name in Catalyst
 
     # module injector
-	my $im = $c->mi( Catalyst::Plugin::Inject::MI->new );
+	my $im = $c->mi( Catalyst::Plugin::Inject::MI->new(ctx => $c) );
 
     $im->load($conf);
 
