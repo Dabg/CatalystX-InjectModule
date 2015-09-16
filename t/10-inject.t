@@ -47,3 +47,6 @@ ok( request('/a')->is_success, 'Request /a should succeed' );
 
 # check if Controller Bx is injected from modules/Bx/lib/MyApp2/Controller/Bx.pm
 ok( request('/bx')->is_success, 'Request /bx should succeed' );
+
+# check if Catalyst plugin 'CatalystX::SimpleLogin' is lodeed from modules/Cx/config.yml
+ok( request('/login')->is_success, 'Request /login should succeed' );

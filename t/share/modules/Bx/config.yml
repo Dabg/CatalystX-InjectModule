@@ -4,5 +4,4 @@ deps:
   - Cx == 2
   - Ex
 catalyst_plugins:
-  - Static::Simple
   - +CatalystX::SimpleLogin
