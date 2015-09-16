@@ -316,7 +316,7 @@ sub _find_libs_in_module {
 
 =head1 NAME
 
-Catalyst::Plugin::Inject::MI Module injector
+Catalyst::Plugin::Inject::MI Catalyst Module injector
 
 =head1 SYNOPSIS
 
