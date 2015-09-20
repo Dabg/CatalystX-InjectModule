@@ -1,5 +1,10 @@
 Revision history for Catalyst-Plugin-Inject
 
+0.05 2015-09-20
+      - test accecc to /login when CatalystX::SimpleLogin is injected
+      - loading modules in finaluze_config
+      - die if module is not found
+
 0.04  2015-09-09
       - inject catalyst plugins
 
