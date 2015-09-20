@@ -50,6 +50,8 @@ sub resolv {
     my $version   = shift;
 
     my $Module   = $self->get_module($module, $operation, $version );
+    die "Module $module not found !" if ! defined $Module->{name};
+
     my $resolved = $self->resolver->dep_resolv($Module);
     return $resolved;
 }
