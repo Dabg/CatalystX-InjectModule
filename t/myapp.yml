@@ -1,6 +1,6 @@
 name: MyApp
 
-Plugin::Inject:
+CatalystX::Inject:
   debug: 0
   path:
     - t/share/modulesX

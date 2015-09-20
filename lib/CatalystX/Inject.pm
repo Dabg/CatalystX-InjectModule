@@ -1,21 +1,21 @@
 use utf8;
 
-package Catalyst::Plugin::Inject;
+package CatalystX::Inject;
 
 use Moose::Role;
 use namespace::autoclean;
-use Catalyst::Plugin::Inject::MI;
+use CatalystX::Inject::MI;
 
 
 after 'finalize_config' => sub {
 	my $c = shift;
 
-    my $conf = $c->config->{'Plugin::Inject'};
+    my $conf = $c->config->{'CatalystX::Inject'};
 
     $c->mk_classdata('mi'); # we will use this name in Catalyst
 
     # module injector
-	my $mi = $c->mi( Catalyst::Plugin::Inject::MI->new(ctx => $c) );
+	my $mi = $c->mi( CatalystX::Inject::MI->new(ctx => $c) );
 
     $mi->load($conf);
 
@@ -24,7 +24,7 @@ after 'finalize_config' => sub {
 after 'setup_components' => sub {
 	my $c = shift;
 
-    my $conf = $c->config->{'Plugin::Inject'};
+    my $conf = $c->config->{'CatalystX::Inject'};
 
     # inject configured modules
     $c->mi->inject($conf->{modules});
@@ -33,7 +33,7 @@ after 'setup_components' => sub {
 
 =head1 NAME
 
-Catalyst::Plugin::Inject - Inject components, plugins, template, lib ...
+CatalystX::Inject - Inject components, plugins, template, lib ...
 
 This module is at EXPERIMENTAL stage, so use with caution.
 
@@ -42,11 +42,11 @@ This module is at EXPERIMENTAL stage, so use with caution.
 
     use Catalyst qw/
         ConfigLoader
-        Inject
+        +CatalystX::Inject
     /;
 
     # myapp.yml
-    Plugin::Inject:
+    CatalystX::Inject:
       path:
         - t/share/modulesX
         - t/share/modules
@@ -72,7 +72,7 @@ Daniel Brosseau, C<< <dab at catapulse.org> >>
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-catalyst-plugin-inject at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Catalyst-Plugin-Inject>.  I will be notified, and then you'll
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=CatalystX-Inject>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
 
@@ -82,7 +82,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc Catalyst::Plugin::Inject
+    perldoc CatalystX::Inject
 
 
 You can also look for information at:
@@ -91,19 +91,19 @@ You can also look for information at:
 
 =item * RT: CPAN's request tracker (report bugs here)
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Catalyst-Plugin-Inject>
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=CatalystX-Inject>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
-L<http://annocpan.org/dist/Catalyst-Plugin-Inject>
+L<http://annocpan.org/dist/CatalystX-Inject>
 
 =item * CPAN Ratings
 
-L<http://cpanratings.perl.org/d/Catalyst-Plugin-Inject>
+L<http://cpanratings.perl.org/d/CatalystX-Inject>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/Catalyst-Plugin-Inject/>
+L<http://search.cpan.org/dist/CatalystX-Inject/>
 
 =back
 
@@ -154,4 +154,4 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 =cut
 
-1; # End of Catalyst::Plugin::Inject
+1; # End of CatalystX::Inject

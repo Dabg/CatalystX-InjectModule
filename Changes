@@ -1,4 +1,4 @@
-Revision history for Catalyst-Plugin-Inject
+Revision history for CatalystX-Inject
 
 0.05 2015-09-20
       - test accecc to /login when CatalystX::SimpleLogin is injected

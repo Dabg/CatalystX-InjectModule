@@ -1,5 +1,5 @@
 use utf8;
-package Catalyst::Plugin::Inject::MI;
+package CatalystX::Inject::MI;
 
 # This plugin is inspired by :
 # - CatalystX::InjectComponent
@@ -318,7 +318,7 @@ sub _find_libs_in_module {
 
 =head1 NAME
 
-Catalyst::Plugin::Inject::MI Catalyst Module injector
+CatalystX::Inject::MI Catalyst Module injector
 
 =head1 SYNOPSIS
 

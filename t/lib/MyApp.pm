@@ -18,7 +18,7 @@ use Catalyst::Runtime 5.80;
 
 use Catalyst qw/
     ConfigLoader
-    Inject
+    +CatalystX::Inject
 /;
 
 extends 'Catalyst';
