@@ -168,7 +168,7 @@ sub _load_lib {
     unshift( @INC, $libpath );
 
 	# Search and load components
-	my $all_libs = $self->_find_libs_in_module( $module );
+	my $all_libs = $self->_search_in_path( $module->{path}, '.pm$' );
 
 	foreach my $file (@$all_libs) {
 		$self->_load_component( $module, $file )
@@ -297,24 +297,24 @@ sub _load_component {
 }
 
 
-sub _find_libs_in_module {
-	my $self   = shift;
-	my $module = shift;
+sub _search_in_path {
+	my $self  = shift;
+    my $path  = shift;
+	my $regex = shift;
 
-	my @comp_files;
+	my @files;
 	my $tf_finder = sub {
 		return if !-f;
-		return if !/\.pm\z/;
+		return if !/$regex/;
 
 		my $file = $File::Find::name;
-		push @comp_files, $file;
+		push @files, $file;
 	};
 
-    my $libpath = $module->{path} . '/lib';
-
-    find( $tf_finder, $libpath  );
-	return \@comp_files;
+    find( $tf_finder, $path  );
+	return \@files;
 }
+
 
 =head1 NAME
 
