@@ -5,6 +5,6 @@ CatalystX::Inject:
   path:
     - t/share/modulesX
     - t/share/modules
-  modules:
+  inject:
     - Ax
     - A

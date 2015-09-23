@@ -27,7 +27,7 @@ after 'setup_components' => sub {
     my $conf = $c->config->{'CatalystX::Inject'};
 
     # inject configured modules
-    $c->mi->inject($conf->{modules});
+    $c->mi->inject($conf->{inject});
 };
 
 
