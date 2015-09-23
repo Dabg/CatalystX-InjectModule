@@ -14,6 +14,7 @@ use Devel::InnerPackage qw/list_packages/;
 use Moose;
 use Moose::Util qw/find_meta apply_all_roles/;
 use File::Basename;
+use Clone 'clone';
 
 has resolver => (
               is       => 'rw',
@@ -144,6 +145,9 @@ sub _inject {
     my $module = shift;
 
 
+    # Merge config module ----------------
+    $self->_merge_config($module);
+
     # Inject lib and components ----------
     $self->_load_lib($module);
 
@@ -156,6 +160,20 @@ sub _inject {
     # Inject static ----------------------
     $self->_load_static($module);
 
+}
+
+sub _merge_config {
+	my ( $self, $module ) = @_;
+
+    my $mod_conf = clone($module);
+
+    # Merge all keys except these
+    map { delete $mod_conf->{$_} } qw /name path version deps catalyst_plugins /;
+
+    # If there is at least one pattern key
+    if ( keys %$mod_conf ) {
+        my $cfg = $self->ctx->merge_config_hashes( $self->ctx->config, $mod_conf );
+    }
 }
 
 sub _load_lib {
