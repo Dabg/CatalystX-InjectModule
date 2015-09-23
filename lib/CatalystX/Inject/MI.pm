@@ -95,6 +95,10 @@ sub load_modules_path{
 
         my($filename, $mod_config) = %{$cfg->[0]};
 
+        my $msg = "    - find module ". $mod_config->{name};
+        $msg .= " v". $mod_config->{version} if defined $mod_config->{version};
+        $self->log($msg);
+
         my $path = dirname($config);
         $path =~ s|^\./||;
 
