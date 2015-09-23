@@ -13,6 +13,7 @@ use Dependency::Resolver;
 use Devel::InnerPackage qw/list_packages/;
 use Moose;
 use Moose::Util qw/find_meta apply_all_roles/;
+use File::Basename;
 
 has resolver => (
               is       => 'rw',
@@ -81,29 +82,19 @@ sub load_modules_path{
 
     $self->log("  - search modules on $dir ...");
 
-    my $id=0;
-    for my $mod_path ( glob("$dir/*") ) {
-        next if ! -d $mod_path;
+    my $all_configs = $self->_search_in_path( $dir, $conf_filename );
 
-        my $mod_name = $mod_path;
-        $mod_name =~ s/\/$//gmx;
-        $mod_name =~ s/^.*\///gmx;
+    for my $config ( @$all_configs ) {
+        my $cfg = Config::Any->load_files({files => [$config], use_ext => 1 })
+            or die "Error (conf: $config) : $!\n";
 
-        my $mod_conf_filename = "$mod_path/$conf_filename";
+        my($filename, $mod_config) = %{$cfg->[0]};
 
-        # OK config exist
-        if ( -e $mod_conf_filename ) {
-            $self->log("    - find module $mod_name : OK");
-            my $mod_config;
-            my $filename;
-            my $cfg = Config::Any->load_files({files => [$mod_conf_filename], use_ext => 1 })
-                or die "Error (conf: $mod_conf_filename) : $!\n";
-            ($filename, $mod_config) = %{$cfg->[0]};
+        my $path = dirname($config);
+        $path =~ s|^\./||;
 
-            $mod_config->{path} = $mod_path;
-            $self->resolver->add($mod_config);
-        }
-        #else {  print "No config -> NEXT\n"; }
+        $mod_config->{path} = $path;
+        $self->resolver->add($mod_config);
     }
 }
 
