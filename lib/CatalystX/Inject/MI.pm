@@ -68,8 +68,12 @@ sub load {
 
     $self->resolver(Dependency::Resolver->new(debug => $debug ));
 
-    # search modules in 'path' directories  and in @INC
-    for my $dir ( @{ $conf->{path} }, @INC ) {
+    # search modules in 'path' directories
+    for my $dir ( @{ $conf->{path} } ) {
+        if ( $dir eq '__INC__' ) {
+            push(@{$conf->{path}}, @INC);
+            next;
+        }
         $self->load_modules_path($dir, $conf_filename);
     }
 }
@@ -85,6 +89,7 @@ sub load_modules_path{
     my $all_configs = $self->_search_in_path( $dir, $conf_filename );
 
     for my $config ( @$all_configs ) {
+
         my $cfg = Config::Any->load_files({files => [$config], use_ext => 1 })
             or die "Error (conf: $config) : $!\n";
 
