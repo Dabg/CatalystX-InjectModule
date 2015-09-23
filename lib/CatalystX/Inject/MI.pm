@@ -74,12 +74,12 @@ sub load {
             push(@{$conf->{path}}, @INC);
             next;
         }
-        $self->load_modules_path($dir, $conf_filename);
+        $self->_load_modules_path($dir, $conf_filename);
     }
 }
 
 
-sub load_modules_path{
+sub _load_modules_path{
     my $self           = shift;
     my $dir            = shift;
     my $conf_filename  = shift;
