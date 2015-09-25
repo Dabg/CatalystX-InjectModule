@@ -92,7 +92,7 @@ sub _load_modules_path{
 
     my $all_configs = $self->_search_in_path( $dir, $conf_filename );
 
-    for my $config ( @$all_configs ) {
+    CONFIG: for my $config ( @$all_configs ) {
 
         my $cfg = Config::Any->load_files({files => [$config], use_ext => 1 })
             or die "Error (conf: $config) : $!\n";
@@ -104,10 +104,13 @@ sub _load_modules_path{
 
         # next if module already added ( ex: path=share + share/modules)
         for my $m ( @{$self->resolver->modules->{$mod_config->{name}}} ) {
-            next if ( $path eq $m->{path});
+            if ( $path eq $m->{path}){
+                next CONFIG;
+            };
         }
 
         my $msg = "    - find module ". $mod_config->{name};
+        $msg .= "  path=". $path;
         $msg .= " v". $mod_config->{version} if defined $mod_config->{version};
         $self->log($msg);
 
