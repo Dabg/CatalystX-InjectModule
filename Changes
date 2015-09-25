@@ -1,5 +1,11 @@
 Revision history for CatalystX-Inject
 
+0.06 2015-09-20
+     - change the module name
+     - simplifie and replace some methods
+     - add @INC in search modules path ( path: __INC__ )
+     - merge module's config.yml with catalyst config
+
 0.05 2015-09-20
       - test accecc to /login when CatalystX::SimpleLogin is injected
       - loading modules in finaluze_config
