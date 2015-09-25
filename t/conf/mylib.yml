@@ -1,0 +1,8 @@
+name: MyLib
+
+CatalystX::Inject:
+  debug: 0
+  path:
+    - t/share/modules
+  inject:
+    - MyLib
