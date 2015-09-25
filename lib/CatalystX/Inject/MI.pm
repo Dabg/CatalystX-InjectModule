@@ -99,12 +99,17 @@ sub _load_modules_path{
 
         my($filename, $mod_config) = %{$cfg->[0]};
 
+        my $path = dirname($config);
+        $path =~ s|^\./||;
+
+        # next if module already added ( ex: path=share + share/modules)
+        for my $m ( @{$self->resolver->modules->{$mod_config->{name}}} ) {
+            next if ( $path eq $m->{path});
+        }
+
         my $msg = "    - find module ". $mod_config->{name};
         $msg .= " v". $mod_config->{version} if defined $mod_config->{version};
         $self->log($msg);
-
-        my $path = dirname($config);
-        $path =~ s|^\./||;
 
         $mod_config->{path} = $path;
         $self->resolver->add($mod_config);
@@ -117,18 +122,16 @@ sub modules_to_inject {
 
     my $modules = [];
     foreach my $m ( @$modules_name ) {
-        $self->log(" Requested module: $m");
         my $resolved = $self->resolv($m);
 
         if ( $resolved->[-1]->{_loaded}){
-                $self->log("  Already loaded");
+                #$self->log("  Already loaded");
                 next;
         }
 
         foreach my $M ( @$resolved ) {
-            $self->log("  inject " . $M->{name} . '...');
             if ( $M->{_injected} ){
-                $self->log("Already loaded");
+                #$self->log("Already loaded");
                 next;
             }
             push(@$modules,$M);
