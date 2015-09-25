@@ -1,0 +1,8 @@
+name: MergeConfig
+
+CatalystX::Inject:
+  debug: 1
+  path:
+    - t/share/modules
+  inject:
+    - MergeConfig
