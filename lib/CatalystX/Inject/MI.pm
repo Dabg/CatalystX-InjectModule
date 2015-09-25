@@ -8,13 +8,13 @@ package CatalystX::Inject::MI;
 # - Catalyst::Plugin::Thruk::ConfigLoader
 
 use Class::Load ':all';
+use Clone 'clone';
 use File::Find;
+use File::Basename;
 use Dependency::Resolver;
 use Devel::InnerPackage qw/list_packages/;
 use Moose;
 use Moose::Util qw/find_meta apply_all_roles/;
-use File::Basename;
-use Clone 'clone';
 
 has resolver => (
               is       => 'rw',
@@ -110,7 +110,6 @@ sub _load_modules_path{
         }
 
         my $msg = "    - find module ". $mod_config->{name};
-        $msg .= "  path=". $path;
         $msg .= " v". $mod_config->{version} if defined $mod_config->{version};
         $self->log($msg);
 
@@ -357,7 +356,7 @@ CatalystX::Inject::MI Catalyst Module injector
 
 =head1 AUTHOR
 
-Daniel Brosseau, C<< <dab at catapulse.org> >>
+Daniel Brosseau, C<< <dabd at catapulse.org> >>
 
 =cut
 
