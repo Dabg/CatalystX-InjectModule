@@ -88,7 +88,7 @@ sub _load_modules_path{
     my $dir            = shift;
     my $conf_filename  = shift;
 
-    $self->log("  - search modules on $dir ...");
+    $self->log("  - search modules in $dir ...");
 
     my $all_configs = $self->_search_in_path( $dir, "^$conf_filename\$" );
 
@@ -151,6 +151,8 @@ sub inject {
 sub _inject {
     my $self   = shift;
     my $module = shift;
+
+    $self->log(" Inject " . $module->{name});
 
     # Inject lib and components ----------
     $self->_load_lib($module);
