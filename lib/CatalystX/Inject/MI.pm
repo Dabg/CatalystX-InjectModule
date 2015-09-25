@@ -90,7 +90,7 @@ sub _load_modules_path{
 
     $self->log("  - search modules on $dir ...");
 
-    my $all_configs = $self->_search_in_path( $dir, $conf_filename );
+    my $all_configs = $self->_search_in_path( $dir, "^$conf_filename\$" );
 
     CONFIG: for my $config ( @$all_configs ) {
 
