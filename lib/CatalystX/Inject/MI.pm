@@ -77,6 +77,9 @@ sub load {
         }
         $self->_load_modules_path($dir, $conf_filename);
     }
+    # Merge config resolved modules ----------------
+    $self->_merge_resolved_configs;
+
 }
 
 
@@ -108,45 +111,48 @@ sub _load_modules_path{
     }
 }
 
-sub inject {
+sub modules_to_inject {
     my $self    = shift;
-    my $modules = shift;
+    my $modules_name = shift;
 
-    foreach my $m ( @$modules ) {
+    my $modules = [];
+    foreach my $m ( @$modules_name ) {
         $self->log(" Requested module: $m");
         my $resolved = $self->resolv($m);
 
-        if ( $resolved->[-1]->{_injected}){
-                $self->log("  Already injected");
+        if ( $resolved->[-1]->{_loaded}){
+                $self->log("  Already loaded");
                 next;
         }
-
-
 
         foreach my $M ( @$resolved ) {
             $self->log("  inject " . $M->{name} . '...');
             if ( $M->{_injected} ){
-                $self->log("Already injected");
+                $self->log("Already loaded");
                 next;
             }
-
-            # inject module
-            $self->_inject($M);
-
-            $M->{_injected} = 1;
+            push(@$modules,$M);
+            $M->{_loaded} = 1;
         }
     }
+    return $modules;
+}
 
+sub inject {
+    my $self         = shift;
+    my $modules_name = shift;
+
+    my $modules = $self->modules_to_inject($modules_name);
+
+    for my $m ( @$modules) {
+        $self->_inject($m);
+    }
 }
 
 
 sub _inject {
     my $self   = shift;
     my $module = shift;
-
-
-    # Merge config module ----------------
-    $self->_merge_config($module);
 
     # Inject lib and components ----------
     $self->_load_lib($module);
@@ -162,17 +168,25 @@ sub _inject {
 
 }
 
-sub _merge_config {
+sub _merge_resolved_configs {
 	my ( $self, $module ) = @_;
 
-    my $mod_conf = clone($module);
+    $self->log("  - Merge all resolved modules config.yml");
 
-    # Merge all keys except these
-    map { delete $mod_conf->{$_} } qw /name path version deps catalyst_plugins /;
+    my $conf = $self->ctx->config->{'CatalystX::Inject'};
+    my $modules = $self->modules_to_inject($conf->{inject});
 
-    # If there is at least one pattern key
-    if ( keys %$mod_conf ) {
-        my $cfg = $self->ctx->merge_config_hashes( $self->ctx->config, $mod_conf );
+    for my $module (@$modules) {
+
+        my $mod_conf = clone($module);
+
+        # Merge all keys except these
+        map { delete $mod_conf->{$_} } qw /name path version deps catalyst_plugins _loaded/;
+
+        # If there is at least one pattern key
+        for my $k ( keys %$mod_conf) {
+            $self->ctx->config->{$k} = $mod_conf->{$k};
+        }
     }
 }
 
