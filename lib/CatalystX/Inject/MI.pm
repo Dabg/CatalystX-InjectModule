@@ -127,18 +127,11 @@ sub modules_to_inject {
     foreach my $m ( @$modules_name ) {
         my $resolved = $self->resolv($m);
 
-        if ( $resolved->[-1]->{_loaded}){
-                #$self->log("  Already loaded");
-                next;
-        }
-
         foreach my $M ( @$resolved ) {
             if ( $M->{_injected} ){
-                #$self->log("Already loaded");
                 next;
             }
             push(@$modules,$M);
-            $M->{_loaded} = 1;
         }
     }
     return $modules;
@@ -187,7 +180,7 @@ sub _merge_resolved_configs {
         my $mod_conf = clone($module);
 
         # Merge all keys except these
-        map { delete $mod_conf->{$_} } qw /name path version deps catalyst_plugins _loaded/;
+        map { delete $mod_conf->{$_} } qw /name path version deps catalyst_plugins /;
 
         # If there is at least one pattern key
         for my $k ( keys %$mod_conf) {
