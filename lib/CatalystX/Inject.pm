@@ -33,7 +33,7 @@ after 'setup_components' => sub {
 
 =head1 NAME
 
-CatalystX::Inject - Inject components, plugins, template, lib ...
+CatalystX::Inject - Inject components, plugins, config, lib ...
 
 This module is at EXPERIMENTAL stage, so use with caution.
 
@@ -63,6 +63,28 @@ This module is at EXPERIMENTAL stage, so use with caution.
     catalyst_plugins:
       - Static::Simple
       - +CatalystX::SimpleLogin
+
+
+Ce plugin permet d'injecter des 'modules CatalystX::Inject' (CI) dans une application Catalyst.
+
+Qu'est ce qu'un module CI ?
+
+Un module CI est défini par son nom et sa version. Si d'autres informations sont enregistrées dans son fichier de configuration 'config.yml' elles sont fusionnées avec la config de l'application Catalyst.
+
+Un module CI peut être dépendant d'autres modules CI. Le mot-clé 'deps' est alors utilisé pour les définir :
+
+    deps:
+      - OtherModule
+      - Another
+
+Un module CI peut être constitué de :
+
+    - librairies Perl : Elles sont dans ce cas ajoutées aux chemins de recherche des librairies (@INC)
+
+    - composants Catalyst ( Model, View, controller ) : Ils sont injectés dans l'application Catalyst
+
+    - plugins Catalyst ( via le mot clé catalyst_plugins du fichier de configuration du module) : Ils sont injectés dans l'application.
+
 
 
 =head1 AUTHOR
