@@ -30,6 +30,7 @@ after 'setup_components' => sub {
     $c->mi->inject($conf->{inject});
 };
 
+=encoding utf8
 
 =head1 NAME
 
