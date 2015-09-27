@@ -16,6 +16,12 @@ use Devel::InnerPackage qw/list_packages/;
 use Moose;
 use Moose::Util qw/find_meta apply_all_roles/;
 
+has regex_conf_name => (
+              is       => 'rw',
+              isa      => 'Str',
+              default  => sub { '^config.yml$'},
+          );
+
 has resolver => (
               is       => 'rw',
               isa      => 'Dependency::Resolver',
@@ -64,7 +70,7 @@ sub load {
     my $conf_filename  = shift;
 
     $debug = 1 if $conf->{debug};
-    $conf_filename ||= 'config.yml';
+    $conf_filename ||= $self->regex_conf_name;
     $self->log("load_modules ...");
 
     $self->resolver(Dependency::Resolver->new(debug => $debug ));
@@ -171,7 +177,7 @@ sub _inject {
 sub _merge_resolved_configs {
 	my ( $self, $module ) = @_;
 
-    $self->log("  - Merge all resolved modules config.yml");
+    $self->log("  - Merge all resolved modules config (" . $self->regex_conf_name . ')');
 
     my $conf = $self->ctx->config->{'CatalystX::Inject'};
     my $modules = $self->modules_to_inject($conf->{inject});
