@@ -15,6 +15,7 @@ use Dependency::Resolver;
 use Devel::InnerPackage qw/list_packages/;
 use Moose;
 use Moose::Util qw/find_meta apply_all_roles/;
+use Class::Load ':all';
 
 has regex_conf_name => (
               is       => 'rw',
@@ -172,6 +173,8 @@ sub _inject {
     # Inject static ----------------------
     $self->_load_static($module);
 
+    # setup
+    $self->_setup_module($module);
 }
 
 sub _merge_resolved_configs {
@@ -196,6 +199,7 @@ sub _merge_resolved_configs {
     }
 }
 
+
 sub _load_lib {
 	my ( $self, $module ) = @_;
 
@@ -212,6 +216,23 @@ sub _load_lib {
 		$self->_load_component( $module, $file )
 			if ( grep {/Model|View|Controller/} $file );
 	}
+}
+
+sub _setup_module {
+    my $self   = shift;
+    my $module = shift;
+
+    my $module_name = $module->{name};
+    $module_name =~ s|::|/|;
+    my $module_path = $module->{path};
+    my $module_file = $module_path . '/lib/' . $module_name . '.pm';
+
+    if ( -f $module_file ) {
+        $self->log("  - Setup $module_name $module_file...");
+        load_class($module_name);
+        my $mod = $module_name->new;
+        $mod->setup($module, $self->ctx);
+    }
 }
 
 sub _load_catalyst_plugins {
