@@ -4,6 +4,7 @@ Revision history for CatalystX-Inject
      - add tests
      - load only ^config.yml$
      - add pod in franch
+     - module setup
 
 0.06 2015-09-20
      - change the module name
