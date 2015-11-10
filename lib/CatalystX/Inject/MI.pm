@@ -231,7 +231,9 @@ sub _setup_module {
         $self->log("  - Setup $module_name $module_file...");
         load_class($module_name);
         my $mod = $module_name->new;
-        $mod->setup($module, $self->ctx);
+        if ( $mod->can('setup') ) {
+            $mod->setup($module, $self->ctx);
+        }
     }
 }
 
