@@ -1,0 +1,10 @@
+name: MyApp
+
+CatalystX::Inject:
+  debug: 1
+  path:
+    - t/share/modulesX
+    - t/share/modules
+#    - __INC__
+  inject:
+    - Template
