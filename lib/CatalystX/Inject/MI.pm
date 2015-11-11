@@ -38,6 +38,12 @@ has catalyst_plugins => (
               default  => sub { {} },
           );
 
+has _views => (
+              is       => 'rw',
+              isa      => 'ArrayRef',
+              default  => sub { [] },
+          );
+
 my $debug = 0;
 
 sub log {
@@ -215,6 +221,9 @@ sub _load_lib {
 	foreach my $file (@$all_libs) {
 		$self->_load_component( $module, $file )
 			if ( grep {/Model|View|Controller/} $file );
+
+        push(@{$self->_views}, $file)
+            			if ( grep {/\/View\/\w*\.pm/} $file );
 	}
 }
 
@@ -313,13 +322,25 @@ sub _load_catalyst_plugin {
 
 
 sub _load_template {
-	my ( $c, $module ) = @_;
+	my ( $self, $module ) = @_;
 
-    # TODO
+    my $template_dir = $module->{path} . "/root/src";
+
+    if ( -d $template_dir ) {
+        $self->log("  - Add templates") if $debug;
+        $module->{template_dir} = $template_dir;
+
+        # TODO: Template directory for all views (???)
+        foreach my $viewfile ( @{$self->_views} ) {
+            $viewfile =~ /\/View\/(\w*)\.pm/;
+            push( @{ $self->ctx->view($1)->config->{INCLUDE_PATH} }, $template_dir );
+        }
+    }
 }
 
+
 sub _load_static {
-	my ( $c, $module ) = @_;
+	my ( $self, $module ) = @_;
 
     # TODO
 }

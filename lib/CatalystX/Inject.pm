@@ -19,6 +19,7 @@ after 'finalize_config' => sub {
 
     $mi->load($conf);
 
+
 };
 
 after 'setup_components' => sub {
@@ -28,6 +29,12 @@ after 'setup_components' => sub {
 
     # inject configured modules
     $c->mi->inject($conf->{inject});
+
+    # reverses the order of templates directory
+    foreach my $viewfile ( @{$c->mi->_views} ) {
+        $viewfile =~ /\/View\/(\w*)\.pm/;
+        @{ $c->view($1)->config->{INCLUDE_PATH} } = reverse @{ $c->view($1)->config->{INCLUDE_PATH} };
+    }
 };
 
 =encoding utf8
