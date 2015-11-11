@@ -5,7 +5,8 @@ CatalystX::Inject:
   path:
     - t/share/modulesX
     - t/share/modules
-    - __INC__
+#    - __INC__
   inject:
+    - ViewTT
     - Ax
     - A
