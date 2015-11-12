@@ -1,10 +1,14 @@
 Revision history for CatalystX-Inject
 
+0.08 2015-11-11
+     - use Template and Static modules
+     - update pod
+
 0.07 2015-09-27
      - add tests
      - load only ^config.yml$
-     - add pod in franch
-     - module setup
+     - add pod in french
+     - use Setup module
 
 0.06 2015-09-20
      - change the module name
@@ -13,7 +17,7 @@ Revision history for CatalystX-Inject
      - merge module's config.yml with catalyst config
 
 0.05 2015-09-20
-      - test accecc to /login when CatalystX::SimpleLogin is injected
+      - test access to /login when CatalystX::SimpleLogin is injected
       - loading modules in finaluze_config
       - die if module is not found
 
