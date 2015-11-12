@@ -2,6 +2,7 @@
 
 BEGIN {
     $ENV{CATALYST_SCRIPT_GEN} = 40;
+    $ENV{CATALYST_CONFIG} = "myapp.yml";
 }
 
 use Catalyst::ScriptRunner;
