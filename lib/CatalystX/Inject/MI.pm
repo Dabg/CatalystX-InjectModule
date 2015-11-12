@@ -44,6 +44,12 @@ has _views => (
               default  => sub { [] },
           );
 
+has _static_dirs => (
+              is       => 'rw',
+              isa      => 'ArrayRef',
+              default  => sub { [] },
+          );
+
 my $debug = 0;
 
 sub log {
@@ -327,7 +333,7 @@ sub _load_template {
     my $template_dir = $module->{path} . "/root/src";
 
     if ( -d $template_dir ) {
-        $self->log("  - Add templates") if $debug;
+        $self->log("  - Add template directory") if $debug;
         $module->{template_dir} = $template_dir;
 
         # TODO: Template directory for all views (???)
@@ -340,10 +346,18 @@ sub _load_template {
 
 
 sub _load_static {
-	my ( $self, $module ) = @_;
+    my ( $self, $module ) = @_;
 
-    # TODO
+    my $static_dir = $module->{path} . "/root/static";
+
+
+    if ( -d $static_dir ) {
+        $self->log("  - Add static directory") if $debug;
+        $module->{static_dir} = $static_dir;
+        push(@{$self->_static_dirs}, $static_dir);
+    }
 }
+
 
 
 sub _load_component {
@@ -405,6 +419,21 @@ CatalystX::Inject::MI Catalyst Module injector
 =head1 SYNOPSIS
 
 =head1 SUBROUTINES/METHODS
+
+=head2 resolv
+
+=head2 get_module
+
+=head2 load
+
+=head2 inject
+
+=head2 log
+
+=head2 modules_to_inject
+
+
+
 
 =head1 AUTHOR
 

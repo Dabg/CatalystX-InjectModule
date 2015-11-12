@@ -30,11 +30,19 @@ after 'setup_components' => sub {
     # inject configured modules
     $c->mi->inject($conf->{inject});
 
-    # reverses the order of templates directory
+    # reverses the order of templates directory (.../root/src)
     foreach my $viewfile ( @{$c->mi->_views} ) {
         $viewfile =~ /\/View\/(\w*)\.pm/;
         @{ $c->view($1)->config->{INCLUDE_PATH} } = reverse @{ $c->view($1)->config->{INCLUDE_PATH} };
     }
+
+    # push templates path (.../root/static/)
+    foreach my $static_dir ( @{$c->mi->_static_dirs} ) {
+        # XXX : And if Static::Simple is not used ?
+        $static_dir =~ s|/static||;
+        push( @{ $c->config->{'Plugin::Static::Simple'}->{include_path} }, $static_dir );
+    }
+
 };
 
 =encoding utf8
