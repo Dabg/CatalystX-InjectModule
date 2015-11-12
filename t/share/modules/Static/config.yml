@@ -1,0 +1,4 @@
+name: Static
+version: 1
+catalyst_plugins:
+  - Static::Simple
