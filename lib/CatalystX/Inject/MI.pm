@@ -16,6 +16,7 @@ use Devel::InnerPackage qw/list_packages/;
 use Moose;
 use Moose::Util qw/find_meta apply_all_roles/;
 use Class::Load ':all';
+use Catalyst::Utils;
 
 has regex_conf_name => (
               is       => 'rw',
@@ -358,8 +359,6 @@ sub _load_static {
     }
 }
 
-
-
 sub _load_component {
 	my ( $self, $module, $file ) = @_;
 
@@ -369,29 +368,16 @@ sub _load_component {
 	$comp =~ s|\.pm$||;
 	$comp =~ s|/|::|g;
 
-	$self->log("  - Add Component $comp");
+    my $into = $self->ctx;
+    my $as  = $comp;
+    $as =~ s/.*(Model|View|Controller):://;
+	$self->log("  - Add Component into: $into comp:$comp as:$as");
 
-	if ( !is_class_loaded($comp) ) {
-		load_class($comp) or die "Can't load $comp !";
+    Catalyst::Utils::inject_component( into => $into,
+                                       component => $comp,
+                                       as => $as );
 
-		# inject entry to %INC so Perl knows this component is loaded
-		# this is just for politeness and does not aid Catalyst
-		( my $file = "$comp.pm" ) =~ s{::}{/}g;
-		$INC{$file} = 'loaded';
-
-		#  add newly created components to catalyst
-		#  must set up component and -then- call list_packages on it
-		$self->ctx->components->{$comp} = $self->ctx->setup_component($comp);
-
-		for my $m ( list_packages($comp) ) {
-			$self->ctx->components->{$m} = $self->ctx->setup_component($m);
-		}
-	} else {
-        # XXX : die ???
-		$self->log( $module->{name} . " $comp id already loaded" );
-	}
 }
-
 
 sub _search_in_path {
 	my $self  = shift;
