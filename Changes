@@ -1,6 +1,9 @@
 Revision history for CatalystX-Inject
 
-0.08 2015-11-11
+0.09 2015-11-13
+     - use Catalyst::Utils::inject_component
+
+0.08 2015-11-12
      - use Template and Static modules
      - update pod
 
