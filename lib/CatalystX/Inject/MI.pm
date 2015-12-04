@@ -48,7 +48,7 @@ has _views => (
 has _static_dirs => (
               is       => 'rw',
               isa      => 'ArrayRef',
-              default  => sub { [] },
+              default  => sub { [ ] },
           );
 
 my $debug = 0;
@@ -199,16 +199,12 @@ sub _merge_resolved_configs {
     my $modules = $self->modules_to_inject($conf->{inject});
 
     for my $module (@$modules) {
-
         my $mod_conf = clone($module);
 
         # Merge all keys except these
-        map { delete $mod_conf->{$_} } qw /name path version deps catalyst_plugins /;
+        map { delete $mod_conf->{$_} } qw /name version deps catalyst_plugins /;
 
-        # If there is at least one pattern key
-        for my $k ( keys %$mod_conf) {
-            $self->ctx->config->{$k} = $mod_conf->{$k};
-        }
+        $self->ctx->config( Catalyst::Utils::merge_hashes($self->ctx->config, $mod_conf) );
     }
 }
 
@@ -331,16 +327,19 @@ sub _load_catalyst_plugin {
 sub _load_template {
 	my ( $self, $module ) = @_;
 
-    my $template_dir = $module->{path} . "/root/src";
+    foreach my $dir ( 'root/src', 'root/lib') {
 
-    if ( -d $template_dir ) {
-        $self->log("  - Add template directory") if $debug;
-        $module->{template_dir} = $template_dir;
+        my $template_dir = $module->{path} . "/$dir";
 
-        # TODO: Template directory for all views (???)
-        foreach my $viewfile ( @{$self->_views} ) {
-            $viewfile =~ /\/View\/(\w*)\.pm/;
-            push( @{ $self->ctx->view($1)->config->{INCLUDE_PATH} }, $template_dir );
+        if ( -d $template_dir ) {
+            $self->log("  - Add template directory $template_dir") if $debug;
+            $module->{template_dir} = $template_dir;
+
+            # TODO: Template directory for all views (???)
+            foreach my $viewfile ( @{$self->_views} ) {
+                $viewfile =~ /\/View\/(\w*)\.pm/;
+                push( @{ $self->ctx->view($1)->config->{INCLUDE_PATH} }, $template_dir );
+            }
         }
     }
 }
