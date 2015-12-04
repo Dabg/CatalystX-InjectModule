@@ -4,6 +4,9 @@ CatalystX::Inject:
   debug: 1
   path:
     - share/modules
+    - share/modulesX
 #    - __INC__
   inject:
+    - Template
     - Static
+    - Bx
