@@ -1,5 +1,5 @@
 use utf8;
-package CatalystX::Inject::MI;
+package CatalystX::InjectModule::MI;
 
 # This plugin is inspired by :
 # - CatalystX::InjectComponent
@@ -172,7 +172,7 @@ sub _inject {
     my $self   = shift;
     my $module = shift;
 
-    $self->log(" Inject " . $module->{name});
+    $self->log(" InjectModule " . $module->{name});
 
     # Inject lib and components ----------
     $self->_load_lib($module);
@@ -195,7 +195,7 @@ sub _merge_resolved_configs {
 
     $self->log("  - Merge all resolved modules config (" . $self->regex_conf_name . ')');
 
-    my $conf = $self->ctx->config->{'CatalystX::Inject'};
+    my $conf = $self->ctx->config->{'CatalystX::InjectModule'};
     my $modules = $self->modules_to_inject($conf->{inject});
 
     for my $module (@$modules) {
@@ -399,7 +399,7 @@ sub _search_in_path {
 
 =head1 NAME
 
-CatalystX::Inject::MI Catalyst Module injector
+CatalystX::InjectModule::MI Catalyst Module injector
 
 =head1 SYNOPSIS
 

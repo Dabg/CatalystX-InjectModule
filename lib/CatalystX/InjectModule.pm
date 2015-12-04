@@ -1,21 +1,21 @@
 use utf8;
 
-package CatalystX::Inject;
+package CatalystX::InjectModule;
 
 use Moose::Role;
 use namespace::autoclean;
-use CatalystX::Inject::MI;
+use CatalystX::InjectModule::MI;
 
 
 after 'finalize_config' => sub {
 	my $c = shift;
 
-    my $conf = $c->config->{'CatalystX::Inject'};
+    my $conf = $c->config->{'CatalystX::InjectModule'};
 
     $c->mk_classdata('mi'); # we will use this name in Catalyst
 
     # module injector
-	my $mi = $c->mi( CatalystX::Inject::MI->new(ctx => $c) );
+	my $mi = $c->mi( CatalystX::InjectModule::MI->new(ctx => $c) );
 
     $mi->load($conf);
 
@@ -25,7 +25,7 @@ after 'finalize_config' => sub {
 after 'setup_components' => sub {
 	my $c = shift;
 
-    my $conf = $c->config->{'CatalystX::Inject'};
+    my $conf = $c->config->{'CatalystX::InjectModule'};
 
     # inject configured modules
     $c->mi->inject($conf->{inject});
@@ -49,7 +49,7 @@ after 'setup_components' => sub {
 
 =head1 NAME
 
-CatalystX::Inject - Inject components, plugins, config, lib ...
+CatalystX::InjectModule - injects modules containing components, plugins, config, lib, templates ...
 
 This module is at EXPERIMENTAL stage, so use with caution.
 
@@ -58,11 +58,11 @@ This module is at EXPERIMENTAL stage, so use with caution.
 
     use Catalyst qw/
         ConfigLoader
-        +CatalystX::Inject
+        +CatalystX::InjectModule
     /;
 
     # myapp.yml
-    CatalystX::Inject:
+    CatalystX::InjectModule:
       path:
         - t/share/modulesX
         - t/share/modules
@@ -81,7 +81,7 @@ This module is at EXPERIMENTAL stage, so use with caution.
       - +CatalystX::SimpleLogin
 
 
-Ce plugin permet d'injecter des 'modules CatalystX::Inject' (CI) dans une application Catalyst.
+Ce plugin permet d'injecter des 'modules CatalystX::InjectModule' (CI) dans une application Catalyst.
 
 Qu'est ce qu'un module CI ?
 
@@ -101,6 +101,7 @@ Un module CI peut être constitué de :
 
     - plugins Catalyst ( via le mot clé catalyst_plugins du fichier de configuration du module) : Ils sont injectés dans l'application.
 
+    - Fichiers tt dans root/src et root/lib ( Template Toolkit )
 
 
 =head1 AUTHOR
@@ -110,7 +111,7 @@ Daniel Brosseau, C<< <dab at catapulse.org> >>
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-catalyst-plugin-inject at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=CatalystX-Inject>.  I will be notified, and then you'll
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=CatalystX-InjectModule>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
 
@@ -120,7 +121,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc CatalystX::Inject
+    perldoc CatalystX::InjectModule
 
 
 You can also look for information at:
@@ -129,19 +130,19 @@ You can also look for information at:
 
 =item * RT: CPAN's request tracker (report bugs here)
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=CatalystX-Inject>
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=CatalystX-InjectModule>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
-L<http://annocpan.org/dist/CatalystX-Inject>
+L<http://annocpan.org/dist/CatalystX-InjectModule>
 
 =item * CPAN Ratings
 
-L<http://cpanratings.perl.org/d/CatalystX-Inject>
+L<http://cpanratings.perl.org/d/CatalystX-InjectModule>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/CatalystX-Inject/>
+L<http://search.cpan.org/dist/CatalystX-InjectModule/>
 
 =back
 
@@ -192,4 +193,4 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 =cut
 
-1; # End of CatalystX::Inject
+1; # End of CatalystX::InjectModule

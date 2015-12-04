@@ -7,7 +7,7 @@ use Test::More;
 plan tests => 1;
 
 BEGIN {
-    use_ok( 'CatalystX::Inject' ) || print "Bail out!\n";
+    use_ok( 'CatalystX::InjectModule' ) || print "Bail out!\n";
 }
 
-diag( "Testing CatalystX::Inject $CatalystX::Inject::VERSION, Perl $], $^X" );
+diag( "Testing CatalystX::InjectModule $CatalystX::InjectModule::VERSION, Perl $], $^X" );
