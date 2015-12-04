@@ -2,3 +2,8 @@ name: Static
 version: 1
 catalyst_plugins:
   - Static::Simple
+
+
+Plugin::Static::Simple:
+  include_path:
+    - root/static/
