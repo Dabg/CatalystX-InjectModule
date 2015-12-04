@@ -1,7 +1,9 @@
-Revision history for CatalystX-Inject
+Revision history for CatalystX-InjectModule
 
-0.09 2015-11-13
+0.09 2015-12-04
      - use Catalyst::Utils::inject_component
+     - use Catalyst::Utils::merge_hash to merge modules config
+     - add template paths to all view
 
 0.08 2015-11-12
      - use Template and Static modules
