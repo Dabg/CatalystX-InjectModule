@@ -92,6 +92,7 @@ sub load {
     # search modules in 'path' directories
     for my $dir ( @{ $conf->{path} } ) {
         if ( $dir eq '__INC__' ) {
+            pop(@INC) if $INC[-1] eq '.'; # do not search module in '.'
             push(@{$conf->{path}}, @INC);
             next;
         }
