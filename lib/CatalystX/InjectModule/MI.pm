@@ -21,7 +21,7 @@ use Catalyst::Utils;
 has regex_conf_name => (
               is       => 'rw',
               isa      => 'Str',
-              default  => sub { '^config.yml$'},
+              default  => sub { '^cxim_config.yml$'},
           );
 
 has resolver => (
@@ -113,7 +113,6 @@ sub _load_modules_path{
     my $all_configs = $self->_search_in_path( $dir, "^$conf_filename\$" );
 
     CONFIG: for my $config ( @$all_configs ) {
-
         my $cfg = Config::Any->load_files({files => [$config], use_ext => 1 })
             or die "Error (conf: $config) : $!\n";
 
