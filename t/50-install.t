@@ -12,4 +12,4 @@ ok(my(undef, $c) = ctx_request('/a'), 'controller A can use MyLib');
 
 my $module_MyLib = $c->mi->get_module('MyLib');
 
-is($module_MyLib->{setup}, 1, 'module MyLib is setup');
+is($module_MyLib->{installed}, 1, 'module MyLib is installed');

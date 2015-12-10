@@ -7,10 +7,10 @@ our @EXPORT_OK = qw(ping);
 
 sub ping { return 'pong' }
 
-sub setup {
+sub install {
     my ($self, $module, $c ) = @_;
 
-    $module->{setup} = 1;
+    $module->{installed} = 1;
 }
 
 1;
