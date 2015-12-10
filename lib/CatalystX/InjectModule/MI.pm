@@ -243,10 +243,10 @@ sub _setup_module {
     my $module_file = $module_path . '/lib/' . $module_name . '.pm';
 
     if ( -f $module_file ) {
-        $self->log("  - Setup $module_name $module_file...");
         load_class($module_name);
         my $mod = $module_name->new;
         if ( $mod->can('setup') ) {
+            $self->log("  - Setup $module_name $module_file...");
             $mod->setup($module, $self->ctx);
         }
     }
