@@ -222,6 +222,9 @@ sub _load_lib {
 	my $all_libs = $self->_search_in_path( $module->{path}, '.pm$' );
 
 	foreach my $file (@$all_libs) {
+
+        next if grep {/TraitFor/} $file;
+
 		$self->_load_component( $module, $file )
 			if ( grep {/Model|View|Controller/} $file );
 
