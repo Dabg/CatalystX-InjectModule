@@ -86,14 +86,6 @@ sub resolv {
     return $resolved;
 }
 
-sub _add_to_modules_installed {
-    my $self    = shift;
-    my $modules = shift;
-
-    foreach my $m (@$modules) {
-        $self->modules_installed->{$m->{name}} = $m;
-    }
-}
 
 sub load {
     my $self           = shift;
@@ -120,6 +112,46 @@ sub load {
 
 }
 
+
+
+sub modules_to_inject {
+    my $self    = shift;
+    my $modules_name = shift;
+
+    my $modules = [];
+    foreach my $m ( @$modules_name ) {
+        my $resolved = $self->resolv($m);
+
+        foreach my $M ( @$resolved ) {
+            if ( $M->{_injected} ){
+                next;
+            }
+            push(@$modules,$M);
+        }
+    }
+    return $modules;
+}
+
+sub inject {
+    my $self         = shift;
+    my $modules_name = shift;
+
+    my $modules = $self->modules_to_inject($modules_name);
+
+    for my $m ( @$modules) {
+        $self->_inject($m);
+    }
+}
+
+
+sub _add_to_modules_installed {
+    my $self    = shift;
+    my $modules = shift;
+
+    foreach my $m (@$modules) {
+        $self->modules_installed->{$m->{name}} = $m;
+    }
+}
 
 sub _load_modules_path{
     my $self           = shift;
@@ -154,36 +186,6 @@ sub _load_modules_path{
         $self->resolver->add($mod_config);
     }
 }
-
-sub modules_to_inject {
-    my $self    = shift;
-    my $modules_name = shift;
-
-    my $modules = [];
-    foreach my $m ( @$modules_name ) {
-        my $resolved = $self->resolv($m);
-
-        foreach my $M ( @$resolved ) {
-            if ( $M->{_injected} ){
-                next;
-            }
-            push(@$modules,$M);
-        }
-    }
-    return $modules;
-}
-
-sub inject {
-    my $self         = shift;
-    my $modules_name = shift;
-
-    my $modules = $self->modules_to_inject($modules_name);
-
-    for my $m ( @$modules) {
-        $self->_inject($m);
-    }
-}
-
 
 sub _inject {
     my $self   = shift;
