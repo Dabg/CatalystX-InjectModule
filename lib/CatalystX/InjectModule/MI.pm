@@ -186,8 +186,8 @@ sub _inject {
     # Inject static ----------------------
     $self->_load_static($module);
 
-    # setup
-    $self->_setup_module($module);
+    # install
+    $self->_install_module($module);
 }
 
 sub _merge_resolved_configs {
@@ -233,7 +233,7 @@ sub _load_lib {
 	}
 }
 
-sub _setup_module {
+sub _install_module {
     my $self   = shift;
     my $module = shift;
 
@@ -245,9 +245,9 @@ sub _setup_module {
     if ( -f $module_file ) {
         load_class($module_name);
         my $mod = $module_name->new;
-        if ( $mod->can('setup') ) {
-            $self->log("  - Setup $module_name $module_file...");
-            $mod->setup($module, $self->ctx);
+        if ( $mod->can('install') ) {
+            $self->log("  - Install $module_name $module_file...");
+            $mod->install($module, $self->ctx);
         }
     }
 }

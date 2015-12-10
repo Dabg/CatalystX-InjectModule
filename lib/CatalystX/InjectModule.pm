@@ -103,6 +103,7 @@ Un module CI peut être constitué de :
 
     - Fichiers tt dans root/src et root/lib ( Template Toolkit )
 
+    - Un fichier a son nom comportant une fonction 'install' qui sera exécutée lors du chargement.
 
 =head1 AUTHOR
 
