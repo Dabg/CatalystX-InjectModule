@@ -39,6 +39,12 @@ has catalyst_plugins => (
               default  => sub { {} },
           );
 
+has modules_installed => (
+              is       => 'rw',
+              isa      => 'HashRef',
+              default  => sub { {} },
+          );
+
 has _views => (
               is       => 'rw',
               isa      => 'ArrayRef',
@@ -75,7 +81,18 @@ sub resolv {
     die "Module $module not found !" if ! defined $Module->{name};
 
     my $resolved = $self->resolver->dep_resolv($Module);
+
+    $self->_add_to_modules_installed($resolved);
     return $resolved;
+}
+
+sub _add_to_modules_installed {
+    my $self    = shift;
+    my $modules = shift;
+
+    foreach my $m (@$modules) {
+        $self->modules_installed->{$m->{name}} = $m;
+    }
 }
 
 sub load {
