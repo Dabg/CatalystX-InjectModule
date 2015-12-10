@@ -39,7 +39,7 @@ has catalyst_plugins => (
               default  => sub { {} },
           );
 
-has modules_installed => (
+has modules_loaded => (
               is       => 'rw',
               isa      => 'HashRef',
               default  => sub { {} },
@@ -82,7 +82,7 @@ sub resolv {
 
     my $resolved = $self->resolver->dep_resolv($Module);
 
-    $self->_add_to_modules_installed($resolved);
+    $self->_add_to_modules_loaded($resolved);
     return $resolved;
 }
 
@@ -144,12 +144,12 @@ sub inject {
 }
 
 
-sub _add_to_modules_installed {
+sub _add_to_modules_loaded {
     my $self    = shift;
     my $modules = shift;
 
     foreach my $m (@$modules) {
-        $self->modules_installed->{$m->{name}} = $m;
+        $self->modules_loaded->{$m->{name}} = $m;
     }
 }
 
