@@ -143,7 +143,6 @@ sub inject {
     }
 }
 
-
 sub _add_to_modules_loaded {
     my $self    = shift;
     my $modules = shift;
@@ -183,6 +182,7 @@ sub _load_modules_path{
         $self->log($msg);
 
         $mod_config->{path} = $path;
+
         $self->resolver->add($mod_config);
     }
 }
@@ -208,6 +208,7 @@ sub _inject {
     # install
     $self->_install_module($module);
 }
+
 
 sub _merge_resolved_configs {
 	my ( $self, $module ) = @_;
@@ -258,6 +259,12 @@ sub _install_module {
 
     my $module_name = $module->{name};
     $module_name =~ s|::|/|;
+
+    if ( $self->_is_installed($module) ) {
+        $self->log("  - $module_name already installed");
+        return;
+    }
+
     my $module_path = $module->{path};
     my $module_file = $module_path . '/lib/' . $module_name . '.pm';
 
@@ -269,6 +276,18 @@ sub _install_module {
             $mod->install($module, $self->ctx);
         }
     }
+}
+
+sub _is_installed {
+    my $self   = shift;
+    my $module = shift;
+
+    my $conf = $self->ctx->config->{'CatalystX::InjectModule'};
+    my $states_path = $conf->{states_path};
+
+
+    #use Data::Dumper;print Dumper($conf);
+    return 0;
 }
 
 sub _load_catalyst_plugins {
