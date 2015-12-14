@@ -222,7 +222,7 @@ sub _merge_resolved_configs {
         my $mod_conf = clone($module);
 
         # Merge all keys except these
-        map { delete $mod_conf->{$_} } qw /name version deps catalyst_plugins /;
+        map { delete $mod_conf->{$_} } qw /name version deps catalyst_plugins dbix_fixtures /;
 
         $self->ctx->config( Catalyst::Utils::merge_hashes($self->ctx->config, $mod_conf) );
     }
@@ -273,7 +273,7 @@ sub _install_module {
         my $mod = $module_name->new;
         if ( $mod->can('install') ) {
             $self->log("  - Install $module_name $module_file...");
-            $mod->install($module, $self->ctx);
+            $mod->install($module, $self);
         }
     }
 }
