@@ -18,6 +18,11 @@ use Moose::Util qw/find_meta apply_all_roles/;
 use Class::Load ':all';
 use Catalyst::Utils;
 
+has debug => (
+              is       => 'rw',
+              isa      => 'Int',
+          );
+
 has regex_conf_name => (
               is       => 'rw',
               isa      => 'Str',
@@ -57,11 +62,10 @@ has _static_dirs => (
               default  => sub { [ ] },
           );
 
-my $debug = 0;
 
 sub log {
     my($self, $msg) = @_;
-	$self->ctx->log->debug( "MI: $msg" ) if $debug;
+	$self->ctx->log->debug( "MI: $msg" ) if $self->debug;
 }
 
 sub get_module {
@@ -92,11 +96,11 @@ sub load {
     my $conf           = shift;
     my $conf_filename  = shift;
 
-    $debug = 1 if $conf->{debug};
+    $self->debug(1) if $conf->{debug};
     $conf_filename ||= $self->regex_conf_name;
     $self->log("load_modules ...");
 
-    $self->resolver(Dependency::Resolver->new(debug => $debug ));
+    $self->resolver(Dependency::Resolver->new(debug => $self->debug ));
 
     # search modules in 'path' directories
     for my $dir ( @{ $conf->{path} } ) {
@@ -373,7 +377,7 @@ sub _load_template {
         my $template_dir = $module->{path} . "/$dir";
 
         if ( -d $template_dir ) {
-            $self->log("  - Add template directory $template_dir") if $debug;
+            $self->log("  - Add template directory $template_dir") if $self->debug;
             $module->{template_dir} = $template_dir;
 
             # TODO: Template directory for all views (???)
@@ -393,7 +397,7 @@ sub _load_static {
 
 
     if ( -d $static_dir ) {
-        $self->log("  - Add static directory") if $debug;
+        $self->log("  - Add static directory") if $self->debug;
         $module->{static_dir} = $static_dir;
         push(@{$self->_static_dirs}, $static_dir);
     }
