@@ -70,7 +70,7 @@ This module is at EXPERIMENTAL stage, so use with caution.
         - Ax
         - A
 
-    # Each module must have at least one file config.yml
+    # Each module must have at least one file cxmi_config.yml
     name: Bx
     version: 2
     deps:
@@ -85,7 +85,7 @@ Ce plugin permet d'injecter des 'modules CatalystX::InjectModule' (CI) dans une 
 
 Qu'est ce qu'un module CI ?
 
-Un module CI est défini par son nom et sa version. Si d'autres informations sont enregistrées dans son fichier de configuration 'config.yml' elles sont fusionnées avec la config de l'application Catalyst.
+Un module CI est défini par son nom et sa version. Si d'autres informations sont enregistrées dans son fichier de configuration 'cxmi_config.yml' elles sont fusionnées avec la config de l'application Catalyst.
 
 Un module CI peut être dépendant d'autres modules CI. Le mot-clé 'deps' est alors utilisé pour les définir :
 
@@ -103,7 +103,7 @@ Un module CI peut être constitué de :
 
     - Fichiers tt dans root/src et root/lib ( Template Toolkit )
 
-    - Un fichier a son nom comportant une fonction 'install' qui sera exécutée lors du chargement.
+    - Un fichier a son nom comportant une fonction 'install' qui sera exécutée lors du chargement. L'installation ne peut se faire qu'une seule fois. Pour réinstaller un Module CI il faut au préalable déinstaller le module.
 
 =head1 AUTHOR
 
