@@ -4,12 +4,14 @@ use warnings;
 use Test::More 'no_plan';
 use lib "t/lib";
 
-$ENV{CATALYST_CONFIG} = 't/conf/mylib.yml';
+$ENV{CATALYST_CONFIG} = 't/conf/install.yml';
 
 use_ok( 'Catalyst::Test', 'MyApp' );
 
-ok(my(undef, $c) = ctx_request('/a'), 'controller A can use MyLib');
+ok(my(undef, $c) = ctx_request('/'), 'get catalyst context');
 
-my $module_MyLib = $c->mi->get_module('MyLib');
+my $module_Install = $c->mi->get_module('Install');
 
-is($module_MyLib->{installed}, 1, 'module MyLib is installed');
+is($module_Install->{installed}, 1, 'module Install is installed');
+
+is( -e $c->mi->_persist_file_name($module_Install), 1, 'persistent file exist');
