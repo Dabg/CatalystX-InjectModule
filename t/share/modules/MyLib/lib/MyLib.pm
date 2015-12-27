@@ -7,9 +7,4 @@ our @EXPORT_OK = qw(ping);
 
 sub ping { return 'pong' }
 
-sub install {
-    my ($self, $module, $mi ) = @_;
-    $module->{installed} = 1;
-}
-
 1;

@@ -158,6 +158,14 @@ sub _add_to_modules_loaded {
     }
 }
 
+sub _del_persist_file {
+    my $self   = shift;
+    my $module = shift;
+
+    my $persist_f = $self->_persist_file_name($module);
+    unlink $persist_f or die "Can not delete file $persist_f : $!";
+}
+
 sub _load_modules_path{
     my $self           = shift;
     my $dir            = shift;
@@ -212,7 +220,7 @@ sub _inject {
     $self->_load_static($module);
 
     # install
-    $self->_install_module($module);
+    $self->install_module($module);
 }
 
 
@@ -259,7 +267,7 @@ sub _load_lib {
 	}
 }
 
-sub _install_module {
+sub install_module {
     my $self   = shift;
     my $module = shift;
 
@@ -281,6 +289,32 @@ sub _install_module {
             $self->log("  - Install $module_name $module_file...");
             $mod->install($module, $self);
             $self->_add_persist_file($module);
+        }
+    }
+}
+
+sub uninstall_module {
+    my $self   = shift;
+    my $module = shift;
+
+    my $module_name = $module->{name};
+    $module_name =~ s|::|/|;
+
+    if ( ! $self->_is_installed($module) ) {
+        $self->log("  - $module_name is not installed");
+        return;
+    }
+
+    my $module_path = $module->{path};
+    my $module_file = $module_path . '/lib/' . $module_name . '.pm';
+
+    if ( -f $module_file ) {
+        load_class($module_name);
+        my $mod = $module_name->new;
+        if ( $mod->can('uninstall') ) {
+            $self->log("  - UnInstall $module_name $module_file...");
+            $mod->uninstall($module, $self);
+            $self->_del_persist_file($module);
         }
     }
 }
