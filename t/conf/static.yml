@@ -7,3 +7,4 @@ CatalystX::InjectModule:
 #    - __INC__
   inject:
     - Static
+  persistent_dir: t/var/

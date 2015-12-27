@@ -10,13 +10,15 @@ package CatalystX::InjectModule::MI;
 use Class::Load ':all';
 use Clone 'clone';
 use File::Find;
-use File::Basename;
+use File::Basename qw( dirname );
+use File::Path qw( make_path );
+
 use Dependency::Resolver;
 use Devel::InnerPackage qw/list_packages/;
 use Moose;
 use Moose::Util qw/find_meta apply_all_roles/;
-use Class::Load ':all';
 use Catalyst::Utils;
+use YAML qw(DumpFile);
 
 has debug => (
               is       => 'rw',
@@ -278,6 +280,7 @@ sub _install_module {
         if ( $mod->can('install') ) {
             $self->log("  - Install $module_name $module_file...");
             $mod->install($module, $self);
+            $self->_add_persist_file($module);
         }
     }
 }
@@ -286,12 +289,33 @@ sub _is_installed {
     my $self   = shift;
     my $module = shift;
 
-    my $conf = $self->ctx->config->{'CatalystX::InjectModule'};
-    my $states_path = $conf->{states_path};
-
-
-    #use Data::Dumper;print Dumper($conf);
+    return 1 if ( -e $self->_persist_file_name($module) );
     return 0;
+}
+
+sub _add_persist_file {
+    my $self   = shift;
+    my $module = shift;
+
+    my $persist_f = $self->_persist_file_name($module);
+    DumpFile($persist_f, $module)
+        or die "Can not create file $persist_f : $!";
+}
+
+
+sub _persist_file_name {
+    my $self   = shift;
+    my $module = shift;
+
+    my $conf = $self->ctx->config->{'CatalystX::InjectModule'};
+
+    my $persist_d = $conf->{persistent_dir} || 'var';
+
+    make_path($persist_d) if ! -d $persist_d;
+
+    my $persist_f = $persist_d . '/' . $module->{name} .  '.yml';
+    $persist_f =~ s|//|/|g;
+    return $persist_f;
 }
 
 sub _load_catalyst_plugins {

@@ -6,3 +6,4 @@ CatalystX::InjectModule:
     - t/share/modules
   inject:
     - MergeConfig
+  persistent_dir: t/var/

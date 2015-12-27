@@ -8,3 +8,4 @@ CatalystX::InjectModule:
 #    - __INC__
   inject:
     - Template
+  persistent_dir: t/var/

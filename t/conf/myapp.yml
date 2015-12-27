@@ -10,3 +10,4 @@ CatalystX::InjectModule:
     - ViewTT
     - Ax
     - A
+  persistent_dir: t/var/
