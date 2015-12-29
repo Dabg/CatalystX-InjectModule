@@ -2,3 +2,13 @@ name: DBIC
 version: 1
 
 default_model: DBIC
+
+# - Database Model -
+Model::DBIC:
+  traits:
+    - FromMigration
+  extra_migration_args:
+    target_dir: ./t/share
+  schema_class: MyApp::Schema
+  install_if_needed:
+    default_fixture_sets:
