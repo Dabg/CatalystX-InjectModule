@@ -520,6 +520,9 @@ CatalystX::InjectModule::MI Catalyst Module injector
 
 =head2 modules_to_inject
 
+=head2 install_module
+
+=head2 uninstall_module
 
 
 
