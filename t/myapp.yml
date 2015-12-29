@@ -10,3 +10,15 @@ CatalystX::InjectModule:
     - Template
     - Static
     - Bx
+    - DBIC
+    - Fixture
+
+# - Database Model -
+Model::DBIC:
+  traits:
+    - FromMigration
+  extra_migration_args:
+    target_dir: ./share
+  schema_class: MyApp::Schema
+  install_if_needed:
+    default_fixture_sets:
