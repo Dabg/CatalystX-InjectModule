@@ -1,5 +1,11 @@
 Revision history for CatalystX-InjectModule
 
+0.10 2015-12-29
+     - save the installation information in files
+     - debug attribut
+     - load module and use install method if exist
+     - add role CatalystX-InjectModule-Fixtures
+
 0.09 2015-12-04
      - use Catalyst::Utils::inject_component
      - use Catalyst::Utils::merge_hash to merge modules config
