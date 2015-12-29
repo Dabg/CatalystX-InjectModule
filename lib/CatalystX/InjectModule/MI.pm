@@ -314,8 +314,8 @@ sub uninstall_module {
         if ( $mod->can('uninstall') ) {
             $self->log("  - UnInstall $module_name $module_file...");
             $mod->uninstall($module, $self);
-            $self->_del_persist_file($module);
         }
+        $self->_del_persist_file($module);
     }
 }
 
