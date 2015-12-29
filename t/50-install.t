@@ -21,3 +21,5 @@ ok($c->mi->uninstall_module($module_Install), 'UnInstall module Install');
 is( ! -e $c->mi->_persist_file_name($module_Install), 1, 'persistent file is deleted');
 
 is($module_Install->{installed}, 0, 'module Install is uninstalled');
+
+unlink 't/share/myapp-schema.db';
