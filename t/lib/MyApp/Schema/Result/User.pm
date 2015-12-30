@@ -147,7 +147,7 @@ __PACKAGE__->has_many(
   "user_roles",
   "MyApp::Schema::Result::UserRole",
   { "foreign.user_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
+  { cascade_copy => 0, cascade_delete => 1 },
 );
 
 
