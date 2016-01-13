@@ -438,11 +438,9 @@ sub _load_template {
             $self->log("  - Add template directory $template_dir");
             $module->{template_dir} = $template_dir;
 
-            # TODO: Template directory for all views (???)
-            foreach my $viewfile ( @{$self->_views} ) {
-                $viewfile =~ /\/View\/(\w*)\.pm/;
-                push( @{ $self->ctx->view($1)->config->{INCLUDE_PATH} }, $template_dir );
-            }
+            # Add template to TT view
+            # TODO: Add template to others view ?
+            push( @{ $self->ctx->view('TT')->config->{INCLUDE_PATH} }, $template_dir );
         }
     }
 }

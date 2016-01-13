@@ -5,7 +5,7 @@ package CatalystX::InjectModule;
 use Moose::Role;
 use namespace::autoclean;
 use CatalystX::InjectModule::MI;
-
+use List::MoreUtils qw(uniq);
 
 after 'finalize_config' => sub {
 	my $c = shift;
@@ -30,10 +30,14 @@ after 'setup_components' => sub {
     # inject configured modules
     $c->mi->inject($conf->{inject});
 
-    # reverses the order of templates directory (.../root/src)
+    # add all templates to all views
+    # XXX : Change this
+    my @tmpl_paths = @{ $c->view('TT')->config->{INCLUDE_PATH} };
     foreach my $viewfile ( @{$c->mi->_views} ) {
         $viewfile =~ /\/View\/(\w*)\.pm/;
-        @{ $c->view($1)->config->{INCLUDE_PATH} } = reverse @{ $c->view($1)->config->{INCLUDE_PATH} };
+        my $view = $1;
+        next if ( $view eq 'TT');
+        @{ $c->view($view)->config->{INCLUDE_PATH} } = uniq(@tmpl_paths);
     }
 
     # push templates path (.../root/static/)
