@@ -48,11 +48,11 @@ has catalyst_plugins => (
 
 has modules_loaded => (
               is       => 'rw',
-              isa      => 'HashRef',
-              default  => sub { {} },
+              isa      => 'ArrayRef',
+              default  => sub { [] },
           );
 
-has _views => (
+has _view_files => (
               is       => 'rw',
               isa      => 'ArrayRef',
               default  => sub { [] },
@@ -61,7 +61,7 @@ has _views => (
 has _static_dirs => (
               is       => 'rw',
               isa      => 'ArrayRef',
-              default  => sub { [ ] },
+              default  => sub { [] },
           );
 
 
@@ -88,7 +88,6 @@ sub resolv {
 
     my $resolved = $self->resolver->dep_resolv($Module);
 
-    $self->_add_to_modules_loaded($resolved);
     return $resolved;
 }
 
@@ -143,6 +142,7 @@ sub inject {
     my $modules_name = shift;
 
     my $modules = $self->modules_to_inject($modules_name);
+    $self->_add_to_modules_loaded($modules);
 
     for my $m ( @$modules) {
         $self->_inject($m);
@@ -153,9 +153,7 @@ sub _add_to_modules_loaded {
     my $self    = shift;
     my $modules = shift;
 
-    foreach my $m (@$modules) {
-        $self->modules_loaded->{$m->{name}} = $m;
-    }
+    push(@{$self->modules_loaded}, @$modules);
 }
 
 sub _del_persist_file {
@@ -220,7 +218,7 @@ sub _inject {
     $self->_load_static($module);
 
     # install
-    $self->install_module($module);
+    #$self->install_module($module);
 }
 
 
@@ -262,7 +260,7 @@ sub _load_lib {
 		$self->_load_component( $module, $file )
 			if ( grep {/Model|View|Controller/} $file );
 
-        push(@{$self->_views}, $file)
+        push(@{$self->_view_files}, $file)
             			if ( grep {/\/View\/\w*\.pm/} $file );
 	}
 }

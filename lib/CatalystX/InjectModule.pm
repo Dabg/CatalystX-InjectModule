@@ -32,21 +32,31 @@ after 'setup_components' => sub {
 
     # add all templates to all views
     # XXX : Change this
-    my @tmpl_paths = @{ $c->view('TT')->config->{INCLUDE_PATH} };
-    foreach my $viewfile ( @{$c->mi->_views} ) {
-        $viewfile =~ /\/View\/(\w*)\.pm/;
-        my $view = $1;
-        next if ( $view eq 'TT');
-        @{ $c->view($view)->config->{INCLUDE_PATH} } = uniq(@tmpl_paths);
+    if ( $c->view('TT') ) {
+        my @tmpl_paths = @{ $c->view('TT')->config->{INCLUDE_PATH} };
+        foreach my $viewfile ( @{$c->mi->_view_files} ) {
+            $viewfile =~ /\/View\/(\w*)\.pm/;
+            my $view = $1;
+            next if ( $view eq 'TT');
+            @{ $c->view($view)->config->{INCLUDE_PATH} } = uniq(@tmpl_paths);
+        }
     }
 
     # push templates path (.../root/static/)
-    foreach my $static_dir ( @{$c->mi->_static_dirs} ) {
-        # XXX : And if Static::Simple is not used ?
-        $static_dir =~ s|/static||;
-        push( @{ $c->config->{'Plugin::Static::Simple'}->{include_path} }, $static_dir );
+    if ( $c->mi->_static_dirs ) {
+        foreach my $static_dir ( @{$c->mi->_static_dirs} ) {
+            # XXX : And if Static::Simple is not used ?
+            $static_dir =~ s|/static||;
+            push( @{ $c->config->{'Plugin::Static::Simple'}->{include_path} }, $static_dir );
+        }
     }
 
+    # installer
+    if ( $c->mi->modules_loaded ) {
+        foreach my $module ( @{$c->mi->modules_loaded} ) {
+            $c->mi->install_module($module);
+        }
+    }
 };
 
 =encoding utf8
