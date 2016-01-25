@@ -12,7 +12,6 @@ use Clone 'clone';
 use File::Find;
 use File::Basename qw( dirname );
 use File::Path qw( make_path );
-
 use Dependency::Resolver;
 use Devel::InnerPackage qw/list_packages/;
 use Moose;
@@ -153,7 +152,13 @@ sub _add_to_modules_loaded {
     my $self    = shift;
     my $modules = shift;
 
-    push(@{$self->modules_loaded}, @$modules);
+    # remove dumplicate modules
+    my $all = {};
+    foreach my $m ( @$modules ) {
+        next if ( $all->{$m->{name}} );
+        push(@{$self->modules_loaded},$m);
+        $all->{$m->{name}} = 1;
+    }
 }
 
 sub _del_persist_file {
