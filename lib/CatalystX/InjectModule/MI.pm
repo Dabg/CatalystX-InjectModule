@@ -287,7 +287,7 @@ sub install_module {
 
     if ( -f $module_file ) {
         load_class($module_name);
-        my $mod = $module_name->new;
+        my $mod = $module_name->new( mi => $self);
         if ( $mod->can('install') ) {
             $self->log("  - Install $module_name $module_file...");
             $mod->install($module, $self);
