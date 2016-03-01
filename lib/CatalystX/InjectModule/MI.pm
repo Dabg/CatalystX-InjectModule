@@ -289,7 +289,7 @@ sub install_module {
         load_class($module_name);
         my $mod = $module_name->new( mi => $self);
         if ( $mod->can('install') ) {
-            $self->log("  - Install $module_name $module_file...");
+            $self->log("Install $module_name $module_file...");
             $mod->install($module, $self);
             $self->_add_persist_file($module);
         }
