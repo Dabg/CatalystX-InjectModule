@@ -44,7 +44,9 @@ after 'setup_components' => sub {
 
     # push templates path (.../root/static/)
     if ( $c->mi->_static_dirs ) {
-        foreach my $static_dir ( @{$c->mi->_static_dirs} ) {
+        push( @{$c->mi->_static_dirs}, 'root/static' )
+                  if -d 'root/static';
+        foreach my $static_dir ( reverse @{$c->mi->_static_dirs} ) {
             # XXX : And if Static::Simple is not used ?
             $static_dir =~ s|/static||;
             push( @{ $c->config->{'Plugin::Static::Simple'}->{include_path} }, $static_dir );
