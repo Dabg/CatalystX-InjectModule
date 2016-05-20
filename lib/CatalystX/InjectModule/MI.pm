@@ -18,6 +18,7 @@ use Moose;
 use Moose::Util qw/find_meta apply_all_roles/;
 use Catalyst::Utils;
 use YAML qw(DumpFile);
+use Term::ANSIColor qw(:constants);
 
 has debug => (
               is       => 'rw',
@@ -66,7 +67,13 @@ has _static_dirs => (
 
 sub log {
     my($self, $msg) = @_;
-	$self->ctx->log->debug( "MI: $msg" ) if $self->debug;
+
+    if ( $self->debug > 1){
+        my $caller = ( caller(1) )[3];
+        $msg = YELLOW.BOLD.$caller.CLEAR.' '.$msg;
+    }
+
+    $self->ctx->log->debug( YELLOW."MI".CLEAR.": $msg" ) if $self->debug;
 }
 
 sub get_module {
@@ -96,7 +103,7 @@ sub load {
     my $conf           = shift;
     my $conf_filename  = shift;
 
-    $self->debug(1) if $conf->{debug};
+    $self->debug($conf->{debug}||0);
     $conf_filename ||= $self->regex_conf_name;
     $self->log("load_modules ...");
 
@@ -208,7 +215,7 @@ sub _inject {
     my $self   = shift;
     my $module = shift;
 
-    $self->log(" InjectModule " . $module->{name});
+    $self->log(RED."InjectModule " . $module->{name}.CLEAR);
 
     # Inject lib and components ----------
     $self->_load_lib($module);
@@ -222,7 +229,7 @@ sub _inject {
     # Inject static ----------------------
     $self->_load_static($module);
 
-    # install
+    # install_module is used when all modules are loaded
     #$self->install_module($module);
 }
 
@@ -252,7 +259,7 @@ sub _load_lib {
     my $libpath = $module->{path} . '/lib';
     return if ( ! -d $libpath);
 
-    $self->log("  - Add lib $libpath");
+    $self->log(BLUE."  - Add lib $libpath".CLEAR);
     unshift( @INC, $libpath );
 
 	# Search and load components
