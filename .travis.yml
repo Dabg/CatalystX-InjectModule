@@ -6,6 +6,10 @@ perl:
   - "5.20"                    # installs latest perl 5.20 (if not already available)
   - "blead"                   # install perl from git
 before_install:
+  - sudo add-apt-repository -y ppa:moti-p/cc
+  - sudo apt-get update
+  - sudo apt-get -y --reinstall install imagemagick
+  - printf "\n" | pecl install imagick-beta
   - git clone git://github.com/travis-perl/helpers ~/travis-perl-helpers
   - source ~/travis-perl-helpers/init
   - build-perl
