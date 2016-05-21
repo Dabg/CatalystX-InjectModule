@@ -7,7 +7,7 @@ perl:
   - "blead"                   # install perl from git
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y  libmagickcore-dev perlmagic # to compile some module on travis
+  - sudo apt-get install -y  libmagickcore-dev perlmagick # to compile some module on travis
   - git clone git://github.com/travis-perl/helpers ~/travis-perl-helpers
   - source ~/travis-perl-helpers/init
   - build-perl
