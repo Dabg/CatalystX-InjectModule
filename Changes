@@ -1,5 +1,8 @@
 Revision history for CatalystX-InjectModule
 
+0.11 2016-05-21
+     - update dependencies to pass some tests and use travis
+
 0.10 2016-01-19
      - save the installation information in files
      - debug attribut
