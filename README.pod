@@ -1,8 +1,14 @@
+=pod
+
 =encoding utf8
 
 =head1 NAME
 
 CatalystX::InjectModule - injects modules containing components, plugins, config, lib, templates ...
+
+=head1 VERSION
+
+version 0.11
 
 This module is at EXPERIMENTAL stage, so use with caution.
 
@@ -24,10 +30,10 @@ This module is at EXPERIMENTAL stage, so use with caution.
         - A
 
     # Each module must have at least one file cxmi_config.yml
-    name: Ax
+    name: Bx
     version: 2
     deps:
-      - Bx == 2
+      - Cx == 2
       - Ex
     catalyst_plugins:
       - Static::Simple
@@ -143,6 +149,5 @@ YOUR LOCAL LAW. UNLESS REQUIRED BY LAW, NO COPYRIGHT HOLDER OR
 CONTRIBUTOR WILL BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, OR
 CONSEQUENTIAL DAMAGES ARISING IN ANY WAY OUT OF THE USE OF THE PACKAGE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 
 =cut
