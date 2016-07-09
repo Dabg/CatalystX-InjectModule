@@ -8,7 +8,7 @@ package CatalystX::InjectModule::MI;
 # - Catalyst::Plugin::Thruk::ConfigLoader
 
 use Class::Load ':all';
-use Clone 'clone';
+use Data::Clone 'clone';
 use File::Find;
 use File::Basename qw( dirname );
 use File::Path qw( make_path );
@@ -320,7 +320,7 @@ sub uninstall_module {
 
     if ( -f $module_file ) {
         load_class($module_name);
-        my $mod = $module_name->new;
+        my $mod = $module_name->new(mi => $self);
         if ( $mod->can('uninstall') ) {
             $self->log("  - UnInstall $module_name $module_file...");
             $mod->uninstall($module, $self);
