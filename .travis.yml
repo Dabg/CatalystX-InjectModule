@@ -19,6 +19,6 @@ install:
 script:
   - perl Makefile.PL          # or Build.PL if it exists
   - make                      # or ./Build
-  - prove -l -s -j$(test-jobs) $(test-files)
+  - make test
 after_success:
   - coverage-report
