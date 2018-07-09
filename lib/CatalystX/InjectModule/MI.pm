@@ -248,7 +248,7 @@ sub _merge_resolved_configs {
         # Merge all keys except these
         map { delete $mod_conf->{$_} } qw /name version deps catalyst_plugins dbix_fixtures /;
 
-        $self->ctx->config( Catalyst::Utils::merge_hashes($self->ctx->config, $mod_conf) );
+        $self->ctx->config( Catalyst::Utils::merge_hashes( $mod_conf, $self->ctx->config ) );
     }
 }
 
