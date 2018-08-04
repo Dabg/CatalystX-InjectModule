@@ -66,14 +66,15 @@ has _static_dirs => (
 
 
 sub log {
-    my($self, $msg) = @_;
+    my($self, $msg, $level) = @_;
 
+    $level = 0 if ! $level;
     if ( $self->debug > 1){
         my $caller = ( caller(1) )[3];
         $msg = YELLOW.BOLD.$caller.CLEAR.' '.$msg;
     }
 
-    $self->ctx->log->debug( YELLOW."MI".CLEAR.": $msg" ) if $self->debug;
+    $self->ctx->log->debug( YELLOW."MI".CLEAR.": $msg" ) if ( $self->debug >= $level );
 }
 
 sub get_module {
@@ -285,7 +286,7 @@ sub install_module {
     $module_name =~ s|::|/|;
 
     if ( $self->_is_installed($module) ) {
-        $self->log("  - $module_name already installed");
+        $self->log("  - $module_name already installed", 2);
         return;
     }
 
@@ -373,7 +374,7 @@ sub _load_catalyst_plugins {
 			$self->_load_catalyst_plugin($p);
 			$self->catalyst_plugins->{$p} = 1;
 		} else {
-			$self->log(" - Catalyst plugin $p already loaded !");
+			$self->log(" - Catalyst plugin $p already loaded !", 2);
 		}
 	}
 }
