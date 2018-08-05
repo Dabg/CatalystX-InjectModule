@@ -68,7 +68,7 @@ has _static_dirs => (
 sub log {
     my($self, $msg, $level) = @_;
 
-    $level = 0 if ! $level;
+    $level = 1 if ! $level;
     if ( $self->debug > 1){
         my $caller = ( caller(1) )[3];
         $msg = YELLOW.BOLD.$caller.CLEAR.' '.$msg;
