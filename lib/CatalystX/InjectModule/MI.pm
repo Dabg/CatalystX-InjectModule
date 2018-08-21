@@ -17,8 +17,10 @@ use Devel::InnerPackage qw/list_packages/;
 use Moose;
 use Moose::Util qw/find_meta apply_all_roles/;
 use Catalyst::Utils;
-use YAML qw(DumpFile);
+use YAML qw(Dump DumpFile LoadFile);
 use Term::ANSIColor qw(:constants);
+use Path::Tiny;
+use Path::Class qw( file );
 
 has debug => (
               is       => 'rw',
@@ -122,7 +124,8 @@ sub load {
     # Merge config resolved modules ----------------
     $self->_merge_resolved_configs;
 
-}
+    $self->_build_local_config_file;
+  }
 
 
 
@@ -253,29 +256,43 @@ sub _merge_resolved_configs {
     }
 }
 
+sub _build_local_config_file{
+  my $self  = shift;
+
+  my $file = lc($self->ctx . "::local.yml");
+  $file    =~ s/::/_/g;
+  my $conf        = $self->ctx->config;
+  my $conf_path   = file( File::Spec->rel2abs($file) );
+  my $config_file = path($conf_path->relative);
+
+  # Generates the local configuration file if it doesnot exist
+  $config_file->spew_utf8( Dump($conf) )
+    if ! -e $file;
+
+}
 
 sub _load_lib {
-	my ( $self, $module ) = @_;
+  my ( $self, $module ) = @_;
 
-    my $libpath = $module->{path} . '/lib';
-    return if ( ! -d $libpath);
+  my $libpath = $module->{path} . '/lib';
+  return if ( ! -d $libpath);
 
-    $self->log(BLUE."  - Add lib $libpath".CLEAR);
-    unshift( @INC, $libpath );
+  $self->log(BLUE."  - Add lib $libpath".CLEAR);
+  unshift( @INC, $libpath );
 
-	# Search and load components
-	my $all_libs = $self->_search_in_path( $module->{path}, '.pm$' );
+  # Search and load components
+  my $all_libs = $self->_search_in_path( $module->{path}, '.pm$' );
 
-	foreach my $file (@$all_libs) {
+  foreach my $file (@$all_libs) {
 
-        next if grep {/TraitFor/} $file;
+    next if grep {/TraitFor/} $file;
 
-		$self->_load_component( $module, $file )
-			if ( grep {/Model|View|Controller/} $file );
+    $self->_load_component( $module, $file )
+      if ( grep {/Model|View|Controller/} $file );
 
-        push(@{$self->_view_files}, $file)
-            			if ( grep {/\/View\/\w*\.pm/} $file );
-	}
+    push(@{$self->_view_files}, $file)
+      if ( grep {/\/View\/\w*\.pm/} $file );
+  }
 }
 
 sub install_module {
