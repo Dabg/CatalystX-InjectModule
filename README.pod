@@ -8,7 +8,7 @@ CatalystX::InjectModule - injects modules containing components, plugins, config
 
 =head1 VERSION
 
-version 0.13
+version 0.14
 
 This module is at EXPERIMENTAL stage, so use with caution.
 
