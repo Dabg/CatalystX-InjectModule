@@ -238,9 +238,6 @@ sub _inject {
 
     # Inject static ----------------------
     $self->_load_static($module);
-
-    # install_module is used when all modules are loaded
-    #$self->install_module($module);
 }
 
 
@@ -355,7 +352,7 @@ sub uninstall_module {
     }
 
     my $module_libpath = $module->{libpath};
-    my $module_file    = $module_libpath . '/' . $module_name . '.pm';
+    my $module_file = $module_libpath . '/' . $module_name . '.pm';
 
     if ( -f $module_file ) {
         load_class($module_name);
