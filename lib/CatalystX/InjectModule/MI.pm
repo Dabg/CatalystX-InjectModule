@@ -271,9 +271,6 @@ sub _build_local_config_file{
     my $conf_path   = file( File::Spec->rel2abs($file) );
     my $config_file = path($conf_path->relative);
 
-    print "file=$file config_file=$config_file\n";
-
-
     # Generates the local configuration file if it doesnot exist
     if ( ! -e $file ) {
         $config_file->spew_utf8( Dump($conf) )
