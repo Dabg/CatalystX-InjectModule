@@ -284,21 +284,30 @@ sub _build_local_config_file{
 sub _load_lib {
     my ( $self, $module ) = @_;
 
-    my $libpath = $module->{path} . '/lib';
-    return if ( ! -d $libpath);
+    # use module localy 
+    if ( -d $module->{path} . '/lib') {
+        $module->{libpath} = $module->{path} . '/lib';
+    }
+    # or from installed packages
+    elsif ( -d $module->{path} ){
+        # Nothing
+        $module->{libpath} = $module->{path};
 
-    $self->log(BLUE."  - Add lib $libpath".CLEAR);
-    unshift( @INC, $libpath );
+    } else {
+        return;
+    }
+
+    $self->log(BLUE."  - Add lib "  . $module->{libpath} . CLEAR);
+    unshift( @INC, $module->{libpath} );
 
     $self->libs(\@INC);
     
     # Search and load components
-    my $all_libs = $self->_search_in_path( $module->{path}, '.pm$' );
+    my $all_libs = $self->_search_in_path( $module->{libpath}, '.pm$' );
 
     foreach my $file (@$all_libs) {
 
         next if grep {/TraitFor/} $file;
-
         $self->_load_component( $module, $file )
           if ( grep {/Model|View|Controller/} $file );
 
@@ -319,8 +328,8 @@ sub install_module {
         return;
     }
 
-    my $module_path = $module->{path};
-    my $module_file = $module_path . '/lib/' . $module_name . '.pm';
+    my $module_libpath = $module->{libpath};
+    my $module_file    = $module_libpath . '/' . $module_name . '.pm';
 
     if ( -f $module_file ) {
         load_class($module_name);
@@ -345,8 +354,8 @@ sub uninstall_module {
         return;
     }
 
-    my $module_path = $module->{path};
-    my $module_file = $module_path . '/lib/' . $module_name . '.pm';
+    my $module_libpath = $module->{libpath};
+    my $module_file    = $module_libpath . '/' . $module_name . '.pm';
 
     if ( -f $module_file ) {
         load_class($module_name);
@@ -502,26 +511,31 @@ sub _load_static {
 sub _load_component {
 	my ( $self, $module, $file ) = @_;
 
-	my $libpath = $module->{path} . '/lib';
+	my $libpath = $module->{libpath};
 	my $comp    = $file;
+
 	$comp =~ s|$libpath/||;
 	$comp =~ s|\.pm$||;
 	$comp =~ s|/|::|g;
 
-    my $into = $self->ctx;
-    my $as  = $comp;
-    $as =~ s/.*(Model|View|Controller):://;
+        # If module is installed from packages in @INC
+        if ($libpath !~ /\/lib$/ ){
+            $comp =  $module->{name}.'::' . $comp;
+        }
+        my $into = $self->ctx;
+        my $as  = $comp;
+        $as =~ s/.*(Model|View|Controller):://;
 	$self->log("  - Add Component into: $into comp:$comp as:$as");
 
-    Catalyst::Utils::inject_component( into => $into,
-                                       component => $comp,
+        Catalyst::Utils::inject_component( into => $into,
+                                           component => $comp,
                                        as => $as );
 
-}
+    }
 
 sub _search_in_path {
 	my $self  = shift;
-    my $path  = shift;
+        my $path  = shift;
 	my $regex = shift;
 
 	my @files;
