@@ -66,6 +66,12 @@ has _static_dirs => (
               default  => sub { [] },
           );
 
+has libs => (
+             is       => 'rw',
+             isa      => 'ArrayRef',
+             default  => sub { [] },
+            );
+
 
 sub log {
     my($self, $msg, $level) = @_;
@@ -257,42 +263,51 @@ sub _merge_resolved_configs {
 }
 
 sub _build_local_config_file{
-  my $self  = shift;
+    my $self  = shift;
 
-  my $file = lc($self->ctx . "::local.yml");
-  $file    =~ s/::/_/g;
-  my $conf        = $self->ctx->config;
-  my $conf_path   = file( File::Spec->rel2abs($file) );
-  my $config_file = path($conf_path->relative);
+    my $file = lc($self->ctx . "::local.yml");
+    $file    =~ s/::/_/g;
+    my $conf        = $self->ctx->config;
+    my $conf_path   = file( File::Spec->rel2abs($file) );
+    my $config_file = path($conf_path->relative);
 
-  # Generates the local configuration file if it doesnot exist
-  $config_file->spew_utf8( Dump($conf) )
-    if ! -e $file;
+    print "file=$file config_file=$config_file\n";
 
+
+    # Generates the local configuration file if it doesnot exist
+    if ( ! -e $file ) {
+        $config_file->spew_utf8( Dump($conf) )
+    } else {
+    # Merge loaded conf with local conf
+        my $newconf = LoadFile($config_file);
+        $self->ctx->config( Catalyst::Utils::merge_hashes( $newconf, $self->ctx->config ) );
+        $config_file->spew_utf8( Dump(Catalyst::Utils::merge_hashes( $newconf, $self->ctx->config) ));
+    }
 }
-
 sub _load_lib {
-  my ( $self, $module ) = @_;
+    my ( $self, $module ) = @_;
 
-  my $libpath = $module->{path} . '/lib';
-  return if ( ! -d $libpath);
+    my $libpath = $module->{path} . '/lib';
+    return if ( ! -d $libpath);
 
-  $self->log(BLUE."  - Add lib $libpath".CLEAR);
-  unshift( @INC, $libpath );
+    $self->log(BLUE."  - Add lib $libpath".CLEAR);
+    unshift( @INC, $libpath );
 
-  # Search and load components
-  my $all_libs = $self->_search_in_path( $module->{path}, '.pm$' );
+    $self->libs(\@INC);
+    
+    # Search and load components
+    my $all_libs = $self->_search_in_path( $module->{path}, '.pm$' );
 
-  foreach my $file (@$all_libs) {
+    foreach my $file (@$all_libs) {
 
-    next if grep {/TraitFor/} $file;
+        next if grep {/TraitFor/} $file;
 
-    $self->_load_component( $module, $file )
-      if ( grep {/Model|View|Controller/} $file );
+        $self->_load_component( $module, $file )
+          if ( grep {/Model|View|Controller/} $file );
 
-    push(@{$self->_view_files}, $file)
-      if ( grep {/\/View\/\w*\.pm/} $file );
-  }
+        push(@{$self->_view_files}, $file)
+          if ( grep {/\/View\/\w*\.pm/} $file );
+    }
 }
 
 sub install_module {
