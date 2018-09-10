@@ -196,7 +196,6 @@ sub _load_modules_path{
     $self->log("  - search modules in $dir ...");
 
     my $all_configs = $self->_search_in_path( $dir, "^$conf_filename\$" );
-    use Data::Dumper;print Dumper($dir, $all_configs);
   CONFIG: for my $config ( @$all_configs ) {
         my $cfg = Config::Any->load_files({files => [$config], use_ext => 1 })
           or die "Error (conf: $config) : $!\n";
@@ -322,7 +321,9 @@ sub install_module {
     my $module = shift;
 
     my $module_name = $module->{name};
-    $module_name =~ s|::|/|;
+    my $module_path = $module_name;
+
+    $module_path =~ s|::|/|g;
 
     if ( $self->_is_installed($module) ) {
         $self->log("  - $module_name already installed", 2);
@@ -330,8 +331,7 @@ sub install_module {
     }
 
     my $module_libpath = $module->{libpath};
-    my $module_file    = $module_libpath . '/' . $module_name . '.pm';
-
+    my $module_file    = $module_libpath . '/' . $module_path . '.pm';
     if ( -f $module_file ) {
         load_class($module_name);
         my $mod = $module_name->new( mi => $self);
@@ -501,11 +501,13 @@ sub _load_static {
 
     my $static_dir = $module->{path} . "/root/static";
 
+    foreach my $static_dir ( $module->{path} . "/share/root/static", $module->{path} . "/root/static" ) {
 
-    if ( -d $static_dir ) {
-        $self->log("  - Add static directory");
-        $module->{static_dir} = $static_dir;
-        push(@{$self->_static_dirs}, $static_dir);
+        if ( -d $static_dir ) {
+            $self->log("  - Add static directory");
+            $module->{static_dir} = $static_dir;
+            push(@{$self->_static_dirs}, $static_dir);
+        }
     }
 }
 
