@@ -98,6 +98,7 @@ sub resolv {
     my $operation = shift;
     my $version   = shift;
 
+    next if ! $module;
     my $Module   = $self->get_module($module, $operation, $version );
     die "Module $module not found !" if ! defined $Module->{name};
 
@@ -195,10 +196,10 @@ sub _load_modules_path{
     $self->log("  - search modules in $dir ...");
 
     my $all_configs = $self->_search_in_path( $dir, "^$conf_filename\$" );
-
-    CONFIG: for my $config ( @$all_configs ) {
+    use Data::Dumper;print Dumper($dir, $all_configs);
+  CONFIG: for my $config ( @$all_configs ) {
         my $cfg = Config::Any->load_files({files => [$config], use_ext => 1 })
-            or die "Error (conf: $config) : $!\n";
+          or die "Error (conf: $config) : $!\n";
 
         my($filename, $mod_config) = %{$cfg->[0]};
 
@@ -207,9 +208,10 @@ sub _load_modules_path{
 
         # next if module already added ( ex: path=share + share/modules)
         for my $m ( @{$self->resolver->modules->{$mod_config->{name}}} ) {
-            if ( $path eq $m->{path}){
+            if ( $path eq $m->{path}) {
                 next CONFIG;
-            };
+            }
+            ;
         }
 
         my $msg = "    - find module ". $mod_config->{name};
@@ -478,7 +480,7 @@ sub _load_catalyst_plugin {
 sub _load_template {
 	my ( $self, $module ) = @_;
 
-    foreach my $dir ( 'root/src', 'root/lib') {
+    foreach my $dir ( 'share/root/src', 'share/root/lib', 'root/src', 'root/lib') {
 
         my $template_dir = $module->{path} . "/$dir";
 
