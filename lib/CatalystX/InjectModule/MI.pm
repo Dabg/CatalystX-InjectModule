@@ -173,6 +173,7 @@ sub _add_to_modules_loaded {
     my $all = {};
     foreach my $m ( @$modules ) {
         next if ( $all->{$m->{name}} );
+        
         push(@{$self->modules_loaded},$m);
         $all->{$m->{name}} = 1;
     }
@@ -238,6 +239,7 @@ sub _inject {
 
     # Inject static ----------------------
     $self->_load_static($module);
+
 }
 
 
@@ -526,7 +528,7 @@ sub _load_component {
 
         Catalyst::Utils::inject_component( into => $into,
                                            component => $comp,
-                                       as => $as );
+                                           as => $as );
 
     }
 
